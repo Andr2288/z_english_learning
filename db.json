@@ -1,0 +1,34 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "Alice"
+        }
+    ],
+    "vocabularyWords": [
+        {
+            "id": 1,
+            "english_level": "Beginner-A1",
+            "text": "Book",
+            "exampleUkr": "Я читаю цікаву книгу.",
+            "exampleEng": "I am reading an interesting book.",
+            "accessibilityPercentage": 100
+        },
+        {
+            "id": 2,
+            "english_level": "Beginner-A1",
+            "text": "House",
+            "exampleUkr": "У мене є маленький дім.",
+            "exampleEng": "I have a small house.",
+            "accessibilityPercentage": 100
+        },
+        {
+            "id": 3,
+            "english_level": "Pre-Intermediate-A2",
+            "text": "Friend",
+            "exampleUkr": "Мій друг завжди допомагає мені.",
+            "exampleEng": "My friend always helps me.",
+            "accessibilityPercentage": 100
+        }
+    ]
+}
