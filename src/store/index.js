@@ -7,4 +7,4 @@ export const store = configureStore({
     },
 });
 
-export * from "./features/users/usersThunks";
+export * from "./features/vocabularyWords/vocabularyWordsThunks";

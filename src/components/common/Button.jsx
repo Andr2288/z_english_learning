@@ -18,9 +18,9 @@ function Button({
         "flex items-center px-3 py-1.5 border h-8 cursor-pointer",
         {
             "opacity-80": loading,
-            "border-blue-500 bg-blue-500 text-white hover:bg-blue-400 hover:border-blue-400":
+            "border-[#836EFF] bg-[#836EFF] text-white hover:hover:bg-[#836EFF]/95 hover:border-[#836EFF]/95":
                 primary,
-            "border-gray-900 bg-gray-900 text-white": secondary,
+            "border-gray-500 bg-gray-500 text-white": secondary,
             "border-green-500 bg-green-500 text-white": success,
             "border-yellow-400 bg-yellow-400 text-white": warning,
             "border-red-500 bg-red-500 text-white": danger,
