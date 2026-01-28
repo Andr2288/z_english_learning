@@ -159,14 +159,16 @@ function Exercise() {
         </div>
     );
 
-    const handleNextButtonClick = () => {
+    const handleNextButtonClick = (quality) => {
         setShowTranslation(false);
         setShowTip(false);
 
-        // TODO Remove Dev-Code
-        console.log(data);
-
-        // TODO: Оновити accecibilityPercentage для поточного слова
+        // TODO: Оновити дані поточного слова
+        const metodology_parameters = {
+            status: "LEARNING",
+            lastPreviewed: new Date().toISOString(),
+            quality,
+        };
 
         // TODO: Вибрати наступне слово з масиву даних
         setCurrentVocabularyWordIndex(() => {
@@ -177,20 +179,38 @@ function Exercise() {
     return (
         <div className="w-1/2 min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pt-16 pb-10">
             {content}
-            <button
-                onClick={handleNextButtonClick}
-                disabled={isLoadingExerciseVocabularyItem}
-                hidden={
-                    isLoadingVocabularyWords || isLoadingExerciseVocabularyItem
-                }
-                className={`px-[120px] py-[14px] rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 cursor-pointer ${
-                    isLoadingExerciseVocabularyItem
-                        ? "bg-gray-300 text-gray-500"
-                        : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102"
-                }`}
-            >
-                Далі
-            </button>
+            <div className="self-stretch flex justify-center gap-3">
+                <button
+                    onClick={() => handleNextButtonClick("AGAIN")}
+                    disabled={isLoadingExerciseVocabularyItem}
+                    hidden={
+                        isLoadingVocabularyWords ||
+                        isLoadingExerciseVocabularyItem
+                    }
+                    className={`px-[90px] py-[14px] rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 cursor-pointer ${
+                        isLoadingExerciseVocabularyItem
+                            ? "bg-gray-300 text-gray-500"
+                            : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102"
+                    }`}
+                >
+                    Повторити
+                </button>
+                <button
+                    onClick={() => handleNextButtonClick("GOOD")}
+                    disabled={isLoadingExerciseVocabularyItem}
+                    hidden={
+                        isLoadingVocabularyWords ||
+                        isLoadingExerciseVocabularyItem
+                    }
+                    className={`px-[90px] py-[14px] rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 cursor-pointer ${
+                        isLoadingExerciseVocabularyItem
+                            ? "bg-gray-300 text-gray-500"
+                            : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102"
+                    }`}
+                >
+                    Добре
+                </button>
+            </div>
         </div>
     );
 }
