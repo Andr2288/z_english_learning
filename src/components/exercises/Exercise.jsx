@@ -50,7 +50,7 @@ function Exercise() {
                 data[currentVocabularyWordIndex].main_parameters
             );
         }
-    }, [currentVocabularyWordIndex, data, doGenerateExerciseVocabularyItem]);
+    }, [data.length]);
 
     const highlightUsedForm = (sentence, usedForm) => {
         if (!usedForm || !sentence) return sentence;
@@ -182,10 +182,10 @@ function Exercise() {
             },
         });
 
-        // TODO: Вибрати наступне слово з масиву даних
-        setCurrentVocabularyWordIndex(() => {
-            return Math.floor(Math.random() * data.length);
-        });
+        const nextIndex = Math.floor(Math.random() * data.length);
+        setCurrentVocabularyWordIndex(nextIndex);
+
+        doGenerateExerciseVocabularyItem(data[nextIndex].main_parameters);
     };
 
     return (

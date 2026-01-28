@@ -123,8 +123,6 @@ OUTPUT:
     "example_eng": "My vacation starts on July 5th",
     "used_form": "on July 5th"
 }`;
-        // TODO Dev
-        console.log(input);
 
         const response = await client.responses.create({
             model: "gpt-4.1",
@@ -135,9 +133,6 @@ OUTPUT:
         let parsed;
         try {
             parsed = JSON.parse(response.output_text);
-
-            // TODO Dev
-            console.table(parsed);
         } catch (e) {
             throw new Error("OpenAI returned invalid JSON");
         }
