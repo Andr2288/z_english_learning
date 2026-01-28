@@ -1,6 +1,7 @@
 import { useThunk } from "../../hooks/use-thunk";
 import {
     fetchVocabularyWords,
+    removeVocabularyWord,
     generateExerciseVocabularyItem,
 } from "../../store";
 import { useSelector } from "react-redux";
@@ -15,6 +16,12 @@ function Exercise() {
         isLoadingVocabularyWords,
         loadingVocabularyWordsError,
     ] = useThunk(fetchVocabularyWords);
+
+    const [
+        doRemoveVocabularyWord,
+        isLoadingRemovingVocabularyWord,
+        removeVocabularyWordError,
+    ] = useThunk(removeVocabularyWord);
 
     const [
         doGenerateExerciseVocabularyItem,
@@ -164,6 +171,8 @@ function Exercise() {
         setShowTip(false);
 
         // TODO: Оновити дані поточного слова
+        doRemoveVocabularyWord(data[currentVocabularyWordIndex]);
+
         const metodology_parameters = {
             status: "LEARNING",
             lastPreviewed: new Date().toISOString(),

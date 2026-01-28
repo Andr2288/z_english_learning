@@ -3,12 +3,12 @@ import axios from "axios";
 
 import OpenAI from "openai";
 
-const NODE_ENV = process.env.NODE_ENV;
-const API_URL = process.env.API_URL;
+const NODE_ENV = import.meta.env.MODE; // 'development' або 'production'
+const API_URL = import.meta.env.VITE_API_URL;
 const MONGO_DB_WORDS_URL =
     "http://localhost:5001/api/flashcards/public/687d4b11d8e71d7041649b07";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 const client = new OpenAI({
     apiKey: OPENAI_API_KEY,
@@ -48,6 +48,15 @@ const fetchVocabularyWords = createAsyncThunk(
         const response = await axios.get(`${url}`);
 
         return response.data;
+    }
+);
+
+const removeVocabularyWord = createAsyncThunk(
+    "vocabularyWords/remove",
+    async (vocabulary_word) => {
+        await axios.delete(`${API_URL}/vocabulary_words/${vocabulary_word.id}`);
+
+        return vocabulary_word;
     }
 );
 
@@ -129,4 +138,8 @@ OUTPUT:
     }
 );
 
-export { fetchVocabularyWords, generateExerciseVocabularyItem };
+export {
+    fetchVocabularyWords,
+    removeVocabularyWord,
+    generateExerciseVocabularyItem,
+};

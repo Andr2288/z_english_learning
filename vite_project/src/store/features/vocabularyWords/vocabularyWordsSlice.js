@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
     fetchVocabularyWords,
     generateExerciseVocabularyItem,
+    removeVocabularyWord,
 } from "./vocabularyWordsThunks";
 
 const vocabularyWordsSlice = createSlice({
