@@ -56,7 +56,7 @@ function Exercise() {
                 return (
                     <span
                         key={index}
-                        className="underline decoration-2 decoration-green-400 underline-offset-3"
+                        className="underline decoration-2 decoration-dashed decoration-green-400 underline-offset-5"
                     >
                         {part}
                     </span>
@@ -167,15 +167,15 @@ function Exercise() {
         console.log(data);
 
         // TODO: Оновити accecibilityPercentage для поточного слова
+
         // TODO: Вибрати наступне слово з масиву даних
         setCurrentVocabularyWordIndex(() => {
-            const randomIndex = Math.floor(Math.random() * data.length);
-            return randomIndex;
+            return Math.floor(Math.random() * data.length);
         });
     };
 
     return (
-        <div className="w-1/2 min-h-96 flex flex-col items-center bg-white rounded-2xl shadow-md p-8 pt-16 pb-10">
+        <div className="w-1/2 min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pt-16 pb-10">
             {content}
             <button
                 onClick={handleNextButtonClick}

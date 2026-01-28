@@ -73,15 +73,14 @@ OUTPUT STRUCTURE:
 {
     "example_ukr": "Natural Ukrainian sentence using this word/phrase/pattern",
     "example_eng": "The same sentence in English",
-    "used_form": "the exact form and letter casing of word/phrase/pattern you used in this case (because after parsing I want to underline used form on the client side)"
+    "used_form": "the exact form of word/phrase/pattern you used in "example_eng" (because after parsing I want to underline used form on the client side)"
 }
 
 REQUIREMENTS:
 1. Create ONE example sentence
 3. Ukrainian example must sound native and natural - DO NOT translate word-by-word
-4. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself.
-4. Keep sentences concise (10-20 words)
-6. Return ONLY valid JSON, no markdown, no explanations
+4. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
+5. Return ONLY valid JSON, no markdown, no explanations
 
 A GOOD EXAMPLE FOR A VERB PHRASE:
 
@@ -107,27 +106,13 @@ OUTPUT:
     "example_ukr": "Моя відпустка починається п'ятого липня",
     "example_eng": "My vacation starts on July 5th",
     "used_form": "on July 5th"
-}
-
-A BAD EXAMPLE FOR A WORD:
-
-INPUT:
-- Word/phrase/pattern: "A dog"
-- Topic: "Pets" 
-- Relevant translations: ["Собака"]
-
-OUTPUT:
-{
-    "example_ukr": "Пес був вірним та завжди залишалася з ним", // BAD: The relevant translation was "Собака", but here is used "Пес"
-    "example_eng": "The dog was loyal and always stayed with him",
-    "used_form": "the dog" // BAD: In the exampleEng was "The dog" but used_form is "the dog" - casings don't match
 }`;
         // TODO Dev
         console.log(input);
 
         const response = await client.responses.create({
             model: "gpt-4.1",
-            temperature: 0.8,
+            temperature: 0.6,
             input,
         });
 
