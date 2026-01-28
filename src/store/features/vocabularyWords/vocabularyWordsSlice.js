@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchVocabularyWords, generateExerciseVocabularyItem } from "./vocabularyWordsThunks";
+import {
+    fetchVocabularyWords,
+    generateExerciseVocabularyItem,
+} from "./vocabularyWordsThunks";
 
 const vocabularyWordsSlice = createSlice({
     name: "vocabularyWords",
@@ -12,9 +15,12 @@ const vocabularyWordsSlice = createSlice({
             state.data = action.payload;
         });
 
-        builder.addCase(generateExerciseVocabularyItem.fulfilled, (state, action) => {
-            state.exerciseVocabularyItem = action.payload;
-        });
+        builder.addCase(
+            generateExerciseVocabularyItem.fulfilled,
+            (state, action) => {
+                state.exerciseVocabularyItem = action.payload;
+            }
+        );
     },
 });
 

@@ -1,4 +1,4 @@
-import Exercise from "./components/exercise/Exercise";
+import Exercise from "./components/exercises/Exercise";
 
 function App() {
     return (
