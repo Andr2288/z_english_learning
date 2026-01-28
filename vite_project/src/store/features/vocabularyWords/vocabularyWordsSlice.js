@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
     fetchVocabularyWords,
+    updateVocabularyWord,
     generateExerciseVocabularyItem,
-    removeVocabularyWord,
 } from "./vocabularyWordsThunks";
 
 const vocabularyWordsSlice = createSlice({
@@ -14,6 +14,15 @@ const vocabularyWordsSlice = createSlice({
     extraReducers(builder) {
         builder.addCase(fetchVocabularyWords.fulfilled, (state, action) => {
             state.data = action.payload;
+        });
+
+        builder.addCase(updateVocabularyWord.fulfilled, (state, action) => {
+            const index = state.data.findIndex(
+                (word) => word.id === action.payload.id
+            );
+            if (index !== -1) {
+                state.data[index] = action.payload;
+            }
         });
 
         builder.addCase(

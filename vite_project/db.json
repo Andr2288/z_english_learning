@@ -1,136 +1,157 @@
 {
-    "vocabulary_words": [
-        {
-            "id": 1,
-            "main_parameters": {
-                "text": "Chain",
-                "topic": "Business",
-                "relevant_translations": ["Мережа"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 2,
-            "main_parameters": {
-                "text": "In the north / east / south / west",
-                "topic": "Our World",
-                "relevant_translations": [
-                    "На півночі / сході / півдні / заході"
-                ]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 3,
-            "main_parameters": {
-                "text": "Stakeholder",
-                "topic": "Business",
-                "relevant_translations": ["Зацікавлена сторона"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 4,
-            "main_parameters": {
-                "text": "A lack of",
-                "topic": "",
-                "relevant_translations": ["Відповідальність"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 5,
-            "main_parameters": {
-                "text": "Subsidiary",
-                "topic": "Business",
-                "relevant_translations": ["Дочірня компанія", "Філія"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 6,
-            "main_parameters": {
-                "text": "Revenue",
-                "topic": "Finance",
-                "relevant_translations": ["Дохід", "Прибуток"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 7,
-            "main_parameters": {
-                "text": "Amendment",
-                "topic": "Legal",
-                "relevant_translations": ["Поправка"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 8,
-            "main_parameters": {
-                "text": "Compliance",
-                "topic": "Business",
-                "relevant_translations": ["Дотримання"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 9,
-            "main_parameters": {
-                "text": "Benchmark",
-                "topic": "Business",
-                "relevant_translations": ["Орієнтир"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        },
-        {
-            "id": 10,
-            "main_parameters": {
-                "text": "Sustainability",
-                "topic": "Environment",
-                "relevant_translations": ["Стійкість", "Стабільність"]
-            },
-            "metodology_parameters": {
-                "status": "NEW",
-                "lastReviewed": null,
-                "quality": null
-            }
-        }
-    ]
+  "vocabulary_words": [
+    {
+      "id": "1",
+      "main_parameters": {
+        "text": "Chain",
+        "topic": "Business",
+        "relevant_translations": [
+          "Мережа"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    },
+    {
+      "id": "2",
+      "main_parameters": {
+        "text": "In the north / east / south / west",
+        "topic": "Our World",
+        "relevant_translations": [
+          "На півночі / сході / півдні / заході"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "LEARNING",
+        "lastReviewed": "2026-01-28T20:36:25.604Z",
+        "quality": "GOOD"
+      }
+    },
+    {
+      "id": "3",
+      "main_parameters": {
+        "text": "Stakeholder",
+        "topic": "Business",
+        "relevant_translations": [
+          "Зацікавлена сторона"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    },
+    {
+      "id": "4",
+      "main_parameters": {
+        "text": "A lack of",
+        "topic": "",
+        "relevant_translations": [
+          "Відповідальність"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    },
+    {
+      "id": "5",
+      "main_parameters": {
+        "text": "Subsidiary",
+        "topic": "Business",
+        "relevant_translations": [
+          "Дочірня компанія",
+          "Філія"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    },
+    {
+      "id": "6",
+      "main_parameters": {
+        "text": "Revenue",
+        "topic": "Finance",
+        "relevant_translations": [
+          "Дохід",
+          "Прибуток"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    },
+    {
+      "id": "7",
+      "main_parameters": {
+        "text": "Amendment",
+        "topic": "Legal",
+        "relevant_translations": [
+          "Поправка"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "LEARNING",
+        "lastReviewed": "2026-01-28T20:18:05.572Z",
+        "quality": "GOOD"
+      }
+    },
+    {
+      "id": "8",
+      "main_parameters": {
+        "text": "Compliance",
+        "topic": "Business",
+        "relevant_translations": [
+          "Дотримання"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    },
+    {
+      "id": "9",
+      "main_parameters": {
+        "text": "Benchmark",
+        "topic": "Business",
+        "relevant_translations": [
+          "Орієнтир"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "LEARNING",
+        "lastReviewed": "2026-01-28T20:17:37.396Z",
+        "quality": "AGAIN"
+      }
+    },
+    {
+      "id": "10",
+      "main_parameters": {
+        "text": "Sustainability",
+        "topic": "Environment",
+        "relevant_translations": [
+          "Стійкість",
+          "Стабільність"
+        ]
+      },
+      "metodology_parameters": {
+        "status": "NEW",
+        "lastReviewed": null,
+        "quality": null
+      }
+    }
+  ]
 }

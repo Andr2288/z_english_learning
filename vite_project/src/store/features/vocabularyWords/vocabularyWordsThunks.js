@@ -51,12 +51,19 @@ const fetchVocabularyWords = createAsyncThunk(
     }
 );
 
-const removeVocabularyWord = createAsyncThunk(
-    "vocabularyWords/remove",
-    async (vocabulary_word) => {
-        await axios.delete(`${API_URL}/vocabulary_words/${vocabulary_word.id}`);
+const updateVocabularyWord = createAsyncThunk(
+    "vocabularyWords/update",
+    async ({ id, metodology_parameters }) => {
+        const url =
+            NODE_ENV === "development"
+                ? `${API_URL}/vocabulary_words/${id}`
+                : `${MONGO_DB_WORDS_URL}/${id}`;
 
-        return vocabulary_word;
+        const response = await axios.patch(url, {
+            metodology_parameters,
+        });
+
+        return response.data;
     }
 );
 
@@ -140,6 +147,6 @@ OUTPUT:
 
 export {
     fetchVocabularyWords,
-    removeVocabularyWord,
+    updateVocabularyWord,
     generateExerciseVocabularyItem,
 };

@@ -1,7 +1,7 @@
 import { useThunk } from "../../hooks/use-thunk";
 import {
     fetchVocabularyWords,
-    removeVocabularyWord,
+    updateVocabularyWord,
     generateExerciseVocabularyItem,
 } from "../../store";
 import { useSelector } from "react-redux";
@@ -18,10 +18,10 @@ function Exercise() {
     ] = useThunk(fetchVocabularyWords);
 
     const [
-        doRemoveVocabularyWord,
-        isLoadingRemovingVocabularyWord,
-        removeVocabularyWordError,
-    ] = useThunk(removeVocabularyWord);
+        doUpdateVocabularyWord,
+        isUpdatingVocabularyWord,
+        updateVocabularyWordError,
+    ] = useThunk(updateVocabularyWord);
 
     const [
         doGenerateExerciseVocabularyItem,
@@ -171,13 +171,16 @@ function Exercise() {
         setShowTip(false);
 
         // TODO: Оновити дані поточного слова
-        doRemoveVocabularyWord(data[currentVocabularyWordIndex]);
+        const currentWord = data[currentVocabularyWordIndex];
 
-        const metodology_parameters = {
-            status: "LEARNING",
-            lastPreviewed: new Date().toISOString(),
-            quality,
-        };
+        doUpdateVocabularyWord({
+            id: currentWord.id,
+            metodology_parameters: {
+                status: "LEARNING",
+                lastReviewed: new Date().toISOString(),
+                quality,
+            },
+        });
 
         // TODO: Вибрати наступне слово з масиву даних
         setCurrentVocabularyWordIndex(() => {
