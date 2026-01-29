@@ -1,13 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 
 import OpenAI from "openai";
 import { supabase } from "./supabase.js";
-
-const NODE_ENV = import.meta.env.MODE; // 'development' або 'production'
-const API_URL = import.meta.env.VITE_API_URL;
-const MONGO_DB_WORDS_URL =
-    "http://localhost:5001/api/flashcards/public/687d4b11d8e71d7041649b07";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
@@ -15,29 +9,6 @@ const client = new OpenAI({
     apiKey: OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
 });
-
-const SENTENCE_TYPES = [
-    "documentary",
-    "story",
-    "news",
-    "article",
-    "blog",
-    "scientific",
-    "announcement",
-    "advertisement",
-    "instruction",
-    "review on product / video / post etc",
-    "letter",
-    "documentation",
-    "comment",
-    "social media post",
-];
-
-const getRandomSentenceType = () => {
-    const randomIndex = Math.floor(Math.random() * SENTENCE_TYPES.length);
-    console.log("Selected sentence type:", SENTENCE_TYPES[randomIndex]);
-    return SENTENCE_TYPES[randomIndex];
-};
 
 const fetchVocabularyWords = createAsyncThunk(
     "vocabularyWords/fetch",
@@ -133,7 +104,7 @@ OUTPUT:
 }`;
 
         const response = await client.responses.create({
-            model: "gpt-4.1",
+            model: "gpt-4o-mini",
             temperature: 0.6,
             input,
         });

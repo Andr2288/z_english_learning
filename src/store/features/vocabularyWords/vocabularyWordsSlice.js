@@ -9,7 +9,19 @@ const vocabularyWordsSlice = createSlice({
     name: "vocabularyWords",
     initialState: {
         data: [],
-        exerciseVocabularyItem: null,
+        exerciseState: {
+            exerciseVocabularyItem: null,
+            currentVocabularyWordIndex: 0,
+            isLoading: false,
+        },
+    },
+    reducers: {
+        updateExerciseState: (state, action) => {
+            state.exerciseState = {
+                ...state.exerciseState,
+                ...action.payload,
+            };
+        },
     },
     extraReducers(builder) {
         builder.addCase(fetchVocabularyWords.fulfilled, (state, action) => {
@@ -28,8 +40,12 @@ const vocabularyWordsSlice = createSlice({
             }));
         });
 
+        builder.addCase(updateVocabularyWord.pending, (state) => {
+            state.exerciseState.isLoading = true;
+        });
+
         builder.addCase(updateVocabularyWord.fulfilled, (state, action) => {
-            const word = action.payload;
+            const word = action.payload[0];
             const index = state.data.findIndex((w) => w.id === word.id);
             if (index !== -1) {
                 state.data[index] = {
@@ -48,13 +64,22 @@ const vocabularyWordsSlice = createSlice({
             }
         });
 
+        builder.addCase(generateExerciseVocabularyItem.pending, (state) => {
+            state.exerciseState.isLoading = true;
+        });
+
         builder.addCase(
             generateExerciseVocabularyItem.fulfilled,
             (state, action) => {
-                state.exerciseVocabularyItem = action.payload;
+                state.exerciseState = {
+                    ...state.exerciseState,
+                    exerciseVocabularyItem: action.payload,
+                    isLoading: false,
+                };
             }
         );
     },
 });
 
+export const { updateExerciseState } = vocabularyWordsSlice.actions;
 export const vocabularyWordsReducer = vocabularyWordsSlice.reducer;

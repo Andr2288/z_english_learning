@@ -3,8 +3,9 @@ import {
     fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
+    updateExerciseState,
 } from "../../store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useState, useEffect } from "react";
 
@@ -29,28 +30,34 @@ function Exercise() {
         generateExerciseVocabularyItemError,
     ] = useThunk(generateExerciseVocabularyItem);
 
-    const { data, exerciseVocabularyItem } = useSelector((state) => {
+    const { data, exerciseState } = useSelector((state) => {
         return state.vocabularyWords;
     });
 
-    // TODO Initial State = 0
-    const [currentVocabularyWordIndex, setCurrentVocabularyWordIndex] =
-        useState(0);
+    const dispatch = useDispatch();
 
-    const [showTranslation, setShowTranslation] = useState(false);
-    const [showTip, setShowTip] = useState(false);
+    const [uiState, setUiState] = useState({
+        showTranslation: false,
+        showTip: false,
+    });
 
     useEffect(() => {
         doFetchVocabularyWords();
     }, [doFetchVocabularyWords]);
 
     useEffect(() => {
-        if (data.length > 0) {
+        if (data.length > 0 && !isUpdatingVocabularyWord) {
+            console.log(JSON.stringify(data, null, 2));
             doGenerateExerciseVocabularyItem(
-                data[currentVocabularyWordIndex].main_parameters
+                data[exerciseState.currentVocabularyWordIndex].main_parameters
             );
         }
-    }, [data.length]);
+    }, [
+        data,
+        doGenerateExerciseVocabularyItem,
+        exerciseState.currentVocabularyWordIndex,
+        isUpdatingVocabularyWord,
+    ]);
 
     const highlightUsedForm = (sentence, usedForm) => {
         if (!usedForm || !sentence) return sentence;
@@ -86,10 +93,16 @@ function Exercise() {
                         Упс! Сталася помилка під час завантаження карток :(
                     </p>
                 </div>
-            ) : isLoadingExerciseVocabularyItem ? (
+            ) : exerciseState.isLoading ? (
                 <div className="text-center py-12">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                    <p className="text-gray-600">Генерування даних ...</p>
+                    <p className="text-gray-600">Зачекайте, будь ласка ...</p>
+                </div>
+            ) : updateVocabularyWordError ? (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <p className="text-red-600 font-medium">
+                        Упс! Сталася помилка під час оновлення фрази :(
+                    </p>
                 </div>
             ) : generateExerciseVocabularyItemError ? (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -97,7 +110,7 @@ function Exercise() {
                         Упс! Сталася помилка під час генерації вправи :(
                     </p>
                 </div>
-            ) : data.length > 0 && exerciseVocabularyItem ? (
+            ) : data.length > 0 && exerciseState.exerciseVocabularyItem ? (
                 <>
                     <div className="w-full mb-8">
                         <h2 className="text-xl font-semibold text-gray-700 mb-10">
@@ -105,12 +118,15 @@ function Exercise() {
                         </h2>
                         <div className="bg-blue-100/80 rounded-xl p-5 border-l-4 border-blue-400">
                             <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide">
-                                {exerciseVocabularyItem.example_ukr}
+                                {
+                                    exerciseState.exerciseVocabularyItem
+                                        .example_ukr
+                                }
                             </p>
                         </div>
                     </div>
 
-                    {showTranslation ? (
+                    {uiState.showTranslation ? (
                         <div className="w-full mb-4">
                             <div className="flex justify-center items-center gap-1.5 bg-green-50 border-2 border-green-200 rounded-xl p-3">
                                 <div className="flex items-center justify-center">
@@ -118,15 +134,22 @@ function Exercise() {
                                 </div>
                                 <p className="text-lg text-gray-800 font-semibold">
                                     {highlightUsedForm(
-                                        exerciseVocabularyItem.example_eng,
-                                        exerciseVocabularyItem.used_form
+                                        exerciseState.exerciseVocabularyItem
+                                            .example_eng,
+                                        exerciseState.exerciseVocabularyItem
+                                            .used_form
                                     )}
                                 </p>
                             </div>
                         </div>
                     ) : (
                         <button
-                            onClick={() => setShowTranslation(true)}
+                            onClick={() =>
+                                setUiState((prev) => ({
+                                    ...prev,
+                                    showTranslation: true,
+                                }))
+                            }
                             className="mb-6 px-6 py-3 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex items-center gap-2"
                         >
                             <Eye className="w-5 h-5" />
@@ -134,7 +157,7 @@ function Exercise() {
                         </button>
                     )}
 
-                    {showTip ? (
+                    {uiState.showTip ? (
                         <div className="w-full mb-4">
                             <div className="flex justify-center items-center gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-3">
                                 <div className="flex items-center justify-center">
@@ -142,15 +165,24 @@ function Exercise() {
                                 </div>
                                 <p className="text-lg text-gray-800 font-semibold">
                                     {
-                                        data[currentVocabularyWordIndex]
-                                            .main_parameters.text
+                                        data[
+                                            exerciseState
+                                                .currentVocabularyWordIndex
+                                        ].main_parameters.text
                                     }
                                 </p>
                             </div>
                         </div>
                     ) : (
                         <button
-                            onClick={() => setShowTip(true)}
+                            onClick={() =>
+                                setUiState((prev) => {
+                                    return {
+                                        ...prev,
+                                        showTip: true,
+                                    };
+                                })
+                            }
                             className="mb-4 px-6 py-3 border-2 border-gray-200 hover:border-violet-400 hover:bg-violet-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex items-center gap-2"
                         >
                             <Lightbulb className="w-5 h-5" />
@@ -167,11 +199,24 @@ function Exercise() {
     );
 
     const handleNextButtonClick = (quality) => {
-        setShowTranslation(false);
-        setShowTip(false);
+        dispatch(
+            updateExerciseState({
+                currentVocabularyWordIndex: Math.floor(
+                    Math.random() * data.length
+                ),
+            })
+        );
+
+        setUiState((prev) => {
+            return {
+                ...prev,
+                showTranslation: false,
+                showTip: false,
+            };
+        });
 
         // TODO: Оновити дані поточного слова
-        const currentWord = data[currentVocabularyWordIndex];
+        const currentWord = data[exerciseState.currentVocabularyWordIndex];
 
         doUpdateVocabularyWord({
             id: currentWord.id,
@@ -181,11 +226,6 @@ function Exercise() {
                 quality,
             },
         });
-
-        const nextIndex = Math.floor(Math.random() * data.length);
-        setCurrentVocabularyWordIndex(nextIndex);
-
-        doGenerateExerciseVocabularyItem(data[nextIndex].main_parameters);
     };
 
     return (
@@ -194,31 +234,23 @@ function Exercise() {
             <div className="self-stretch flex justify-center gap-3">
                 <button
                     onClick={() => handleNextButtonClick("AGAIN")}
-                    disabled={isLoadingExerciseVocabularyItem}
                     hidden={
+                        data.length <= 0 ||
                         isLoadingVocabularyWords ||
-                        isLoadingExerciseVocabularyItem
+                        exerciseState.isLoading
                     }
-                    className={`px-[90px] py-[14px] rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 cursor-pointer ${
-                        isLoadingExerciseVocabularyItem
-                            ? "bg-gray-300 text-gray-500"
-                            : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102"
-                    }`}
+                    className={`px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer`}
                 >
                     Повторити
                 </button>
                 <button
                     onClick={() => handleNextButtonClick("GOOD")}
-                    disabled={isLoadingExerciseVocabularyItem}
                     hidden={
+                        data.length <= 0 ||
                         isLoadingVocabularyWords ||
-                        isLoadingExerciseVocabularyItem
+                        exerciseState.isLoading
                     }
-                    className={`px-[90px] py-[14px] rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 cursor-pointer ${
-                        isLoadingExerciseVocabularyItem
-                            ? "bg-gray-300 text-gray-500"
-                            : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102"
-                    }`}
+                    className={`px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer`}
                 >
                     Добре
                 </button>
