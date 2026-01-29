@@ -35,7 +35,7 @@ function Exercise() {
 
     // TODO Initial State = 0
     const [currentVocabularyWordIndex, setCurrentVocabularyWordIndex] =
-        useState(1);
+        useState(0);
 
     const [showTranslation, setShowTranslation] = useState(false);
     const [showTip, setShowTip] = useState(false);

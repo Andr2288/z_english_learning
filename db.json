@@ -10,9 +10,9 @@
         ]
       },
       "metodology_parameters": {
-        "status": "NEW",
-        "lastReviewed": null,
-        "quality": null
+        "status": "LEARNING",
+        "lastReviewed": "2026-01-28T21:11:56.618Z",
+        "quality": "AGAIN"
       }
     },
     {
@@ -26,7 +26,7 @@
       },
       "metodology_parameters": {
         "status": "LEARNING",
-        "lastReviewed": "2026-01-28T21:02:04.242Z",
+        "lastReviewed": "2026-01-28T21:11:39.986Z",
         "quality": "GOOD"
       }
     },
@@ -41,7 +41,7 @@
       },
       "metodology_parameters": {
         "status": "LEARNING",
-        "lastReviewed": "2026-01-28T20:56:28.629Z",
+        "lastReviewed": "2026-01-28T21:11:44.914Z",
         "quality": "GOOD"
       }
     },
@@ -55,9 +55,9 @@
         ]
       },
       "metodology_parameters": {
-        "status": "NEW",
-        "lastReviewed": null,
-        "quality": null
+        "status": "LEARNING",
+        "lastReviewed": "2026-01-28T21:11:48.441Z",
+        "quality": "GOOD"
       }
     },
     {
@@ -72,7 +72,7 @@
       },
       "metodology_parameters": {
         "status": "LEARNING",
-        "lastReviewed": "2026-01-28T21:02:06.938Z",
+        "lastReviewed": "2026-01-28T21:11:34.850Z",
         "quality": "GOOD"
       }
     },
@@ -88,7 +88,7 @@
       },
       "metodology_parameters": {
         "status": "LEARNING",
-        "lastReviewed": "2026-01-28T20:39:57.547Z",
+        "lastReviewed": "2026-01-28T21:11:51.049Z",
         "quality": "GOOD"
       }
     },
@@ -149,8 +149,8 @@
       },
       "metodology_parameters": {
         "status": "LEARNING",
-        "lastReviewed": "2026-01-28T21:02:09.842Z",
-        "quality": "GOOD"
+        "lastReviewed": "2026-01-28T21:11:54.753Z",
+        "quality": "AGAIN"
       }
     }
   ]

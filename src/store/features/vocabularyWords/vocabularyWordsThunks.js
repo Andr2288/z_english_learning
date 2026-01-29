@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 import OpenAI from "openai";
+import { supabase } from "./supabase.js";
 
 const NODE_ENV = import.meta.env.MODE; // 'development' або 'production'
 const API_URL = import.meta.env.VITE_API_URL;
@@ -41,29 +42,36 @@ const getRandomSentenceType = () => {
 const fetchVocabularyWords = createAsyncThunk(
     "vocabularyWords/fetch",
     async () => {
-        const url =
-            NODE_ENV === "development"
-                ? `${API_URL}/vocabulary_words`
-                : MONGO_DB_WORDS_URL;
-        const response = await axios.get(`${url}`);
+        const { data: vocabulary_words, error } = await supabase
+            .from("vocabulary_words")
+            .select("*");
 
-        return response.data;
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return vocabulary_words;
     }
 );
 
 const updateVocabularyWord = createAsyncThunk(
     "vocabularyWords/update",
     async ({ id, metodology_parameters }) => {
-        const url =
-            NODE_ENV === "development"
-                ? `${API_URL}/vocabulary_words/${id}`
-                : `${MONGO_DB_WORDS_URL}/${id}`;
+        const { data, error } = await supabase
+            .from("vocabulary_words")
+            .update({
+                status: metodology_parameters.status,
+                last_reviewed: metodology_parameters.lastReviewed,
+                quality: metodology_parameters.quality,
+            })
+            .eq("id", id)
+            .select();
 
-        const response = await axios.patch(url, {
-            metodology_parameters,
-        });
+        if (error) {
+            throw new Error(error.message);
+        }
 
-        return response.data;
+        return data;
     }
 );
 
@@ -80,8 +88,8 @@ ${
         : ""
 }
 ${
-    vocabularyWordMainParameters.relevant_translations.length > 0
-        ? `- Relevant translations: ${JSON.stringify(vocabularyWordMainParameters.relevant_translations)}`
+    vocabularyWordMainParameters.relevant_translations
+        ? `- Relevant translations: ${vocabularyWordMainParameters.relevant_translations}`
         : ""
 }
 
@@ -115,7 +123,7 @@ A GOOD EXAMPLE FOR A PATTERN:
 INPUT:
 - Word/phrase/pattern: "On {month} {ordinal numeral}"
 - Topic: "Time & Dates" 
-- Relevant translations: ["Восьмого грудня"]
+- Relevant translations: "Восьмого грудня"
 
 OUTPUT:
 {
