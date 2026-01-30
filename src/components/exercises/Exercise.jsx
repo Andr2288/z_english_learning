@@ -1,5 +1,6 @@
 import { useThunk } from "../../hooks/use-thunk";
 import {
+    addVocabularyWord,
     fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
@@ -7,13 +8,19 @@ import {
 } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { Loader, Eye, Lightbulb } from "lucide-react";
 
 import Modal from "../common/Modal.jsx";
 
 function Exercise() {
+    const [
+        doAddVocabularyWord,
+        isAddingVocabularyWord,
+        addVocabularyWordError,
+    ] = useThunk(addVocabularyWord);
+
     const [
         doFetchVocabularyWords,
         isLoadingVocabularyWords,
@@ -74,13 +81,18 @@ function Exercise() {
         });
     };
 
-    const handleCloseModal = () => {
+    const handleCloseModal = useCallback(() => {
         setUiState((prev) => {
             return {
                 ...prev,
                 showAddVocabularyWordModal: false,
             };
         });
+    }, []);
+
+    const handleAddWord = (newWord) => {
+        doAddVocabularyWord(newWord);
+        handleCloseModal();
     };
 
     useEffect(() => {
@@ -104,7 +116,7 @@ function Exercise() {
     useEffect(() => {
         const handleKeyPress = (event) => {
             if (
-                event.ctrlKey &&
+                !event.ctrlKey &&
                 event.code === "Space" &&
                 !uiState.showAddVocabularyWordModal
             ) {
@@ -116,13 +128,21 @@ function Exercise() {
                 return;
             }
 
-            if (event.altKey) {
+            if (
+                event.ctrlKey &&
+                event.altKey &&
+                !uiState.showAddVocabularyWordModal
+            ) {
                 event.preventDefault();
                 handleNextButtonClick("AGAIN");
                 return;
             }
 
-            if (event.code === "Space") {
+            if (
+                event.ctrlKey &&
+                event.code === "Space" &&
+                !uiState.showAddVocabularyWordModal
+            ) {
                 event.preventDefault();
                 handleNextButtonClick("GOOD");
                 return;
@@ -307,9 +327,12 @@ function Exercise() {
                     Добре
                 </button>
             </div>
+
             <Modal
                 isActive={uiState.showAddVocabularyWordModal}
                 closeModal={handleCloseModal}
+                onSubmit={handleAddWord}
+                isLoading={isAddingVocabularyWord}
             />
         </div>
     );

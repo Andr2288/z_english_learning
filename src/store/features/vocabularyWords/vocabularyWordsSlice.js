@@ -1,5 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import {
+    addVocabularyWord,
     fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
@@ -24,6 +25,23 @@ const vocabularyWordsSlice = createSlice({
         },
     },
     extraReducers(builder) {
+        builder.addCase(addVocabularyWord.fulfilled, (state, action) => {
+            const word = action.payload;
+            state.data.push({
+                id: word.id,
+                main_parameters: {
+                    text: word.text,
+                    topic: word.topic,
+                    relevant_translations: word.relevant_translations,
+                },
+                metodology_parameters: {
+                    status: word.status,
+                    lastReviewed: word.last_reviewed,
+                    quality: word.quality,
+                },
+            });
+        });
+
         builder.addCase(fetchVocabularyWords.fulfilled, (state, action) => {
             state.data = action.payload.map((word) => ({
                 id: word.id,

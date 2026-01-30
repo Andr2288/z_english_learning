@@ -10,6 +10,32 @@ const client = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
+const addVocabularyWord = createAsyncThunk(
+    "vocabularyWords/add",
+    async (newWord) => {
+        const { data, error } = await supabase
+            .from("vocabulary_words")
+            .insert([
+                {
+                    text: newWord.text,
+                    topic: newWord.topic || null,
+                    relevant_translations:
+                        newWord.relevant_translations || null,
+                    status: "NEW",
+                    last_reviewed: null,
+                    quality: null,
+                },
+            ])
+            .select();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data[0];
+    }
+);
+
 const fetchVocabularyWords = createAsyncThunk(
     "vocabularyWords/fetch",
     async () => {
@@ -120,6 +146,7 @@ OUTPUT:
 );
 
 export {
+    addVocabularyWord,
     fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
