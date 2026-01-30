@@ -11,6 +11,8 @@ import { useState, useEffect } from "react";
 
 import { Loader, Eye, Lightbulb } from "lucide-react";
 
+import Modal from "../common/Modal.jsx";
+
 function Exercise() {
     const [
         doFetchVocabularyWords,
@@ -39,7 +41,47 @@ function Exercise() {
     const [uiState, setUiState] = useState({
         showTranslation: false,
         showTip: false,
+        showAddVocabularyWordModal: false,
     });
+
+    const handleNextButtonClick = (quality) => {
+        dispatch(
+            updateExerciseState({
+                currentVocabularyWordIndex: Math.floor(
+                    Math.random() * data.length
+                ),
+            })
+        );
+
+        setUiState((prev) => {
+            return {
+                ...prev,
+                showTranslation: false,
+                showTip: false,
+            };
+        });
+
+        // TODO: Оновити дані поточного слова
+        const currentWord = data[exerciseState.currentVocabularyWordIndex];
+
+        doUpdateVocabularyWord({
+            id: currentWord.id,
+            metodology_parameters: {
+                status: "LEARNING",
+                lastReviewed: new Date().toISOString(),
+                quality,
+            },
+        });
+    };
+
+    const handleCloseModal = () => {
+        setUiState((prev) => {
+            return {
+                ...prev,
+                showAddVocabularyWordModal: false,
+            };
+        });
+    };
 
     useEffect(() => {
         doFetchVocabularyWords();
@@ -58,6 +100,46 @@ function Exercise() {
         exerciseState.currentVocabularyWordIndex,
         isUpdatingVocabularyWord,
     ]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (
+                event.ctrlKey &&
+                event.code === "Space" &&
+                !uiState.showAddVocabularyWordModal
+            ) {
+                event.preventDefault();
+                setUiState((prev) => ({
+                    ...prev,
+                    showAddVocabularyWordModal: true,
+                }));
+                return;
+            }
+
+            if (event.altKey) {
+                event.preventDefault();
+                handleNextButtonClick("AGAIN");
+                return;
+            }
+
+            if (event.code === "Space") {
+                event.preventDefault();
+                handleNextButtonClick("GOOD");
+                return;
+            }
+
+            if (event.key === "Escape" && uiState.showAddVocabularyWordModal) {
+                handleCloseModal();
+                return;
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyPress);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+        };
+    }, [handleNextButtonClick, uiState.showAddVocabularyWordModal]);
 
     const highlightUsedForm = (sentence, usedForm) => {
         if (!usedForm || !sentence) return sentence;
@@ -198,36 +280,6 @@ function Exercise() {
         </div>
     );
 
-    const handleNextButtonClick = (quality) => {
-        dispatch(
-            updateExerciseState({
-                currentVocabularyWordIndex: Math.floor(
-                    Math.random() * data.length
-                ),
-            })
-        );
-
-        setUiState((prev) => {
-            return {
-                ...prev,
-                showTranslation: false,
-                showTip: false,
-            };
-        });
-
-        // TODO: Оновити дані поточного слова
-        const currentWord = data[exerciseState.currentVocabularyWordIndex];
-
-        doUpdateVocabularyWord({
-            id: currentWord.id,
-            metodology_parameters: {
-                status: "LEARNING",
-                lastReviewed: new Date().toISOString(),
-                quality,
-            },
-        });
-    };
-
     return (
         <div className="w-1/2 min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pt-16 pb-10">
             {content}
@@ -255,6 +307,10 @@ function Exercise() {
                     Добре
                 </button>
             </div>
+            <Modal
+                isActive={uiState.showAddVocabularyWordModal}
+                closeModal={handleCloseModal}
+            />
         </div>
     );
 }
