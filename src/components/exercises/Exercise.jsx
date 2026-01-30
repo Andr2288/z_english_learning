@@ -100,7 +100,7 @@ function Exercise() {
     }, [doFetchVocabularyWords]);
 
     useEffect(() => {
-        if (data.length > 0 && !isUpdatingVocabularyWord) {
+        if (data.length > 0 && exerciseState.generateNextStage) {
             console.log(JSON.stringify(data, null, 2));
             doGenerateExerciseVocabularyItem(
                 data[exerciseState.currentVocabularyWordIndex].main_parameters

@@ -5,6 +5,7 @@ import {
     updateVocabularyWord,
     generateExerciseVocabularyItem,
 } from "./vocabularyWordsThunks";
+import exercise from "../../../components/exercises/Exercise.jsx";
 
 const vocabularyWordsSlice = createSlice({
     name: "vocabularyWords",
@@ -14,6 +15,7 @@ const vocabularyWordsSlice = createSlice({
             exerciseVocabularyItem: null,
             currentVocabularyWordIndex: 0,
             isLoading: false,
+            generateNextStage: true,
         },
     },
     reducers: {
@@ -60,6 +62,7 @@ const vocabularyWordsSlice = createSlice({
 
         builder.addCase(updateVocabularyWord.pending, (state) => {
             state.exerciseState.isLoading = true;
+            state.exerciseState.generateNextStage = false;
         });
 
         builder.addCase(updateVocabularyWord.fulfilled, (state, action) => {
@@ -80,20 +83,19 @@ const vocabularyWordsSlice = createSlice({
                     },
                 };
             }
+            state.exerciseState.generateNextStage = true;
         });
 
         builder.addCase(generateExerciseVocabularyItem.pending, (state) => {
             state.exerciseState.isLoading = true;
+            state.exerciseState.generateNextStage = false;
         });
 
         builder.addCase(
             generateExerciseVocabularyItem.fulfilled,
             (state, action) => {
-                state.exerciseState = {
-                    ...state.exerciseState,
-                    exerciseVocabularyItem: action.payload,
-                    isLoading: false,
-                };
+                state.exerciseState.exerciseVocabularyItem = action.payload;
+                state.exerciseState.isLoading = false;
             }
         );
     },
