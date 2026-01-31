@@ -5,7 +5,6 @@ import {
     updateVocabularyWord,
     generateExerciseVocabularyItem,
 } from "./vocabularyWordsThunks";
-import exercise from "../../../components/exercises/Exercise.jsx";
 
 const vocabularyWordsSlice = createSlice({
     name: "vocabularyWords",
@@ -67,6 +66,7 @@ const vocabularyWordsSlice = createSlice({
 
         builder.addCase(updateVocabularyWord.fulfilled, (state, action) => {
             const word = action.payload[0];
+            console.log(action.payload[0]);
             const index = state.data.findIndex((w) => w.id === word.id);
             if (index !== -1) {
                 state.data[index] = {

@@ -52,14 +52,6 @@ function Exercise() {
     });
 
     const handleNextButtonClick = (quality) => {
-        dispatch(
-            updateExerciseState({
-                currentVocabularyWordIndex: Math.floor(
-                    Math.random() * data.length
-                ),
-            })
-        );
-
         setUiState((prev) => {
             return {
                 ...prev,
@@ -79,6 +71,14 @@ function Exercise() {
                 quality,
             },
         });
+
+        dispatch(
+            updateExerciseState({
+                currentVocabularyWordIndex: Math.floor(
+                    Math.random() * data.length
+                ),
+            })
+        );
     };
 
     const handleCloseModal = useCallback(() => {
@@ -101,7 +101,7 @@ function Exercise() {
 
     useEffect(() => {
         if (data.length > 0 && exerciseState.generateNextStage) {
-            console.log(JSON.stringify(data, null, 2));
+            //console.log(JSON.stringify(data, null, 2));
             doGenerateExerciseVocabularyItem(
                 data[exerciseState.currentVocabularyWordIndex].main_parameters
             );
