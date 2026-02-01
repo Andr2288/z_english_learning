@@ -54,7 +54,7 @@ const vocabularyWordsSlice = createSlice({
                 metodology_parameters: {
                     status: word.status,
                     lastReviewed: word.last_reviewed,
-                    quality: word.quality,
+                    checkpoint: word.checkpoint,
                 },
             }));
         });
@@ -79,7 +79,7 @@ const vocabularyWordsSlice = createSlice({
                     metodology_parameters: {
                         status: word.status,
                         lastReviewed: word.last_reviewed,
-                        quality: word.quality,
+                        checkpoint: word.checkpoint,
                     },
                 };
             }

@@ -74,12 +74,97 @@ function Exercise() {
 
         dispatch(
             updateExerciseState({
-                currentVocabularyWordIndex: Math.floor(
-                    Math.random() * data.length
-                ),
-                //currentVocabularyWordIndex: data.length - 1,
+                // currentVocabularyWordIndex: Math.floor(
+                //     Math.random() * data.length
+                // ),
+                currentVocabularyWordIndex: data.length - 1,
             })
         );
+
+        analiseCurrentExerciseItemsState();
+    };
+
+    const selectNextExerciseItem = () => {};
+
+    const analiseCurrentExerciseItemsState = () => {
+        const checkpoints = [
+            {
+                checkpoint: 0,
+                treshold: 0,
+            },
+            {
+                checkpoint: 1,
+                treshold: 1,
+            },
+            {
+                checkpoint: 2,
+                treshold: 5,
+            },
+            {
+                checkpoint: 7,
+                treshold: 7,
+            },
+            {
+                checkpoint: 14,
+                treshold: 16,
+            },
+            {
+                checkpoint: 30,
+                treshold: 30,
+            },
+        ];
+
+        data.forEach((vocabularyItem) => {
+            // 1. Find daysPassedAfterLastReview
+
+            const today = new Date();
+            const lastReviewed = new Date(
+                vocabularyItem.metodology_parameters.lastReviewed
+            );
+            const diffInMs = today - lastReviewed;
+            const daysPassedAfterLastReview = Math.floor(
+                diffInMs / (1000 * 60 * 60 * 24)
+            );
+
+            // 2. Find currentCheckpointIndex
+            const currentCheckpointIndex = checkpoints.findIndex(
+                (checkpoint) => {
+                    return (
+                        checkpoint.checkpoint ===
+                        vocabularyItem.metodology_parameters.checkpoint
+                    );
+                }
+            );
+
+            if (currentCheckpointIndex === 0) {
+                return;
+            }
+
+            // 3. Update Missed Item
+
+            if (
+                daysPassedAfterLastReview >
+                checkpoints[currentCheckpointIndex].treshold
+            ) {
+                console.log(
+                    `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
+                    Checkpoint: ${vocabularyItem.metodology_parameters.checkpoint}
+                    Last preview: ${vocabularyItem.metodology_parameters.lastReviewed}
+                    Treshold: ${checkpoints[currentCheckpointIndex].treshold}
+                    Days passed after last review: ${daysPassedAfterLastReview}
+                    `
+                );
+
+                doUpdateVocabularyWord({
+                    id: vocabularyItem.id,
+                    metodology_parameters: {
+                        status: "MISSED",
+                        checkpoint:
+                            checkpoints[currentCheckpointIndex - 1].checkpoint,
+                    },
+                });
+            }
+        });
     };
 
     const handleCloseModal = useCallback(() => {

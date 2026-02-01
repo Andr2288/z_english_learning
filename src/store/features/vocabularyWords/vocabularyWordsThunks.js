@@ -41,7 +41,8 @@ const fetchVocabularyWords = createAsyncThunk(
     async () => {
         const { data: vocabulary_words, error } = await supabase
             .from("vocabulary_words")
-            .select("*");
+            .select("*")
+            .order("id", { ascending: true });
 
         if (error) {
             throw new Error(error.message);
@@ -59,7 +60,7 @@ const updateVocabularyWord = createAsyncThunk(
             .update({
                 status: metodology_parameters.status,
                 last_reviewed: metodology_parameters.lastReviewed,
-                quality: metodology_parameters.quality,
+                checkpoint: metodology_parameters.checkpoint,
             })
             .eq("id", id)
             .select();
@@ -98,7 +99,7 @@ OUTPUT STRUCTURE:
 }
 
 REQUIREMENTS:
-1. Create ONE example sentence for English level A2+
+1. Create ONE example sentence for English learners
 3. Ukrainian example must sound native and natural - DO NOT translate word-by-word
 4. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
 5. Return ONLY valid JSON, no markdown, no explanations
@@ -130,12 +131,12 @@ OUTPUT:
 }`;
 
         const response = await client.responses.create({
-            //model: "gpt-4o-mini", // швидкий // погана граматика
+            model: "gpt-4o-mini", // швидкий // погана граматика
             //model: "gpt-4.1-mini", // трішки краща граматика
-            model: "gpt-5-mini", // довго, але краща граматика
+            //model: "gpt-5-mini", // довго, але краща граматика
 
-            reasoning: { effort: "low" },
-            //temperature: 0.6,
+            //reasoning: { effort: "low" },
+            temperature: 0.6,
             input,
         });
 
