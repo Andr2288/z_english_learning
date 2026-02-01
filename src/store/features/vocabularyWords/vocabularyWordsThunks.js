@@ -98,7 +98,7 @@ OUTPUT STRUCTURE:
 }
 
 REQUIREMENTS:
-1. Create ONE example sentence
+1. Create ONE example sentence for English level A2+
 3. Ukrainian example must sound native and natural - DO NOT translate word-by-word
 4. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
 5. Return ONLY valid JSON, no markdown, no explanations
@@ -130,14 +130,19 @@ OUTPUT:
 }`;
 
         const response = await client.responses.create({
-            model: "gpt-4o-mini",
-            temperature: 0.6,
+            //model: "gpt-4o-mini", // швидкий // погана граматика
+            //model: "gpt-4.1-mini", // трішки краща граматика
+            model: "gpt-5-mini", // довго, але краща граматика
+
+            reasoning: { effort: "low" },
+            //temperature: 0.6,
             input,
         });
 
         let parsed;
         try {
             parsed = JSON.parse(response.output_text);
+            console.log(response.usage);
         } catch (e) {
             throw new Error("OpenAI returned invalid JSON");
         }

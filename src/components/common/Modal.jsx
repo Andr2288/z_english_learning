@@ -1,7 +1,13 @@
 import { X, Plus } from "lucide-react";
 import { useState } from "react";
 
-function Modal({ isActive, closeModal, onSubmit, isLoading }) {
+function Modal({
+    isActive,
+    closeModal,
+    onSubmit,
+    isLoading,
+    existingWords = [],
+}) {
     const [formData, setFormData] = useState({
         text: "",
         topic: "",
@@ -29,6 +35,23 @@ function Modal({ isActive, closeModal, onSubmit, isLoading }) {
 
         if (!formData.text.trim()) {
             setErrors({ text: "Це поле обов'язкове" });
+            return;
+        }
+
+        const normalizedInput = formData.text
+            .trim()
+            .replace(/\s+/g, " ")
+            .toLowerCase();
+        const wordExists = existingWords.some((word) => {
+            const checkWord = word.main_parameters.text
+                .trim()
+                .replace(/\s+/g, " ")
+                .toLowerCase();
+            return checkWord === normalizedInput;
+        });
+
+        if (wordExists) {
+            setErrors({ text: "Цей елемент вже є в базі" });
             return;
         }
 

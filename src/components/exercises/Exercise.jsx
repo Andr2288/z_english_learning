@@ -77,6 +77,7 @@ function Exercise() {
                 currentVocabularyWordIndex: Math.floor(
                     Math.random() * data.length
                 ),
+                //currentVocabularyWordIndex: data.length - 1,
             })
         );
     };
@@ -333,6 +334,7 @@ function Exercise() {
                 closeModal={handleCloseModal}
                 onSubmit={handleAddWord}
                 isLoading={isAddingVocabularyWord}
+                existingWords={data}
             />
         </div>
     );
