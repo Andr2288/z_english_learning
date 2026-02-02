@@ -16,6 +16,32 @@ const vocabularyWordsSlice = createSlice({
             isLoading: false,
             generateNextStage: true,
         },
+        checkpoints: [
+            {
+                checkpoint: 0,
+                threshold: 0,
+            },
+            {
+                checkpoint: 1,
+                threshold: 1,
+            },
+            {
+                checkpoint: 2,
+                threshold: 5,
+            },
+            {
+                checkpoint: 7,
+                threshold: 7,
+            },
+            {
+                checkpoint: 14,
+                threshold: 16,
+            },
+            {
+                checkpoint: 30,
+                threshold: 30,
+            },
+        ],
     },
     reducers: {
         updateExerciseState: (state, action) => {

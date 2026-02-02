@@ -39,7 +39,7 @@ function Exercise() {
         generateExerciseVocabularyItemError,
     ] = useThunk(generateExerciseVocabularyItem);
 
-    const { data, exerciseState } = useSelector((state) => {
+    const { data, exerciseState, checkpoints } = useSelector((state) => {
         return state.vocabularyWords;
     });
 
@@ -51,7 +51,7 @@ function Exercise() {
         showAddVocabularyWordModal: false,
     });
 
-    const handleNextButtonClick = (quality) => {
+    const handleNextButtonClick = (newStatus) => {
         setUiState((prev) => {
             return {
                 ...prev,
@@ -63,12 +63,37 @@ function Exercise() {
         // TODO: Оновити дані поточного слова
         const currentWord = data[exerciseState.currentVocabularyWordIndex];
 
+        const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
+            return (
+                checkpoint.checkpoint ===
+                currentWord.metodology_parameters.checkpoint
+            );
+        });
+
+        const currentLastReviewed =
+            currentWord.metodology_parameters.lastReviewed;
+        const today = new Date().toISOString().split("T")[0];
+
+        let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
+        if (currentLastReviewed !== today) {
+            if (newStatus === "AGAIN" && currentCheckpointIndex !== 0) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex - 1].checkpoint;
+            } else if (
+                newStatus === "REVIEW" &&
+                checkpoints.length !== currentCheckpointIndex + 1
+            ) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex + 1].checkpoint;
+            }
+        }
+
         doUpdateVocabularyWord({
             id: currentWord.id,
             metodology_parameters: {
-                status: "LEARNING",
+                status: newStatus,
                 lastReviewed: new Date().toISOString(),
-                quality,
+                checkpoint: nextCheckpoint,
             },
         });
 
@@ -87,33 +112,6 @@ function Exercise() {
     const selectNextExerciseItem = () => {};
 
     const analiseCurrentExerciseItemsState = () => {
-        const checkpoints = [
-            {
-                checkpoint: 0,
-                threshold: 0,
-            },
-            {
-                checkpoint: 1,
-                threshold: 1,
-            },
-            {
-                checkpoint: 2,
-                threshold: 5,
-            },
-            {
-                checkpoint: 7,
-                threshold: 7,
-            },
-            {
-                checkpoint: 14,
-                threshold: 16,
-            },
-            {
-                checkpoint: 30,
-                threshold: 30,
-            },
-        ];
-
         data.forEach((vocabularyItem) => {
             // 1. Find daysPassedAfterLastReview
 
@@ -409,7 +407,7 @@ function Exercise() {
                     Повторити
                 </button>
                 <button
-                    onClick={() => handleNextButtonClick("GOOD")}
+                    onClick={() => handleNextButtonClick("REVIEW")}
                     hidden={
                         data.length <= 0 ||
                         isLoadingVocabularyWords ||
