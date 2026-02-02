@@ -87,7 +87,6 @@ const vocabularyWordsSlice = createSlice({
 
         builder.addCase(updateVocabularyWord.pending, (state) => {
             state.exerciseState.isLoading = true;
-            state.exerciseState.generateNextStage = false;
         });
 
         builder.addCase(updateVocabularyWord.fulfilled, (state, action) => {
@@ -109,7 +108,7 @@ const vocabularyWordsSlice = createSlice({
                     },
                 };
             }
-            state.exerciseState.generateNextStage = true;
+            state.exerciseState.isLoading = false;
         });
 
         builder.addCase(generateExerciseVocabularyItem.pending, (state) => {
