@@ -51,66 +51,6 @@ function Exercise() {
         showAddVocabularyWordModal: false,
     });
 
-    const handleNextButtonClick = (newStatus) => {
-        setUiState((prev) => {
-            return {
-                ...prev,
-                showTranslation: false,
-                showTip: false,
-            };
-        });
-
-        // TODO: Оновити дані поточного слова
-        const currentWord = data[exerciseState.currentVocabularyWordIndex];
-
-        const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
-            return (
-                checkpoint.checkpoint ===
-                currentWord.metodology_parameters.checkpoint
-            );
-        });
-
-        const currentLastReviewed =
-            currentWord.metodology_parameters.lastReviewed;
-        const today = new Date().toISOString().split("T")[0];
-
-        let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
-        if (currentLastReviewed !== today) {
-            if (newStatus === "AGAIN" && currentCheckpointIndex !== 0) {
-                nextCheckpoint =
-                    checkpoints[currentCheckpointIndex - 1].checkpoint;
-            } else if (
-                newStatus === "REVIEW" &&
-                checkpoints.length !== currentCheckpointIndex + 1
-            ) {
-                nextCheckpoint =
-                    checkpoints[currentCheckpointIndex + 1].checkpoint;
-            }
-        }
-
-        doUpdateVocabularyWord({
-            id: currentWord.id,
-            metodology_parameters: {
-                status: newStatus,
-                lastReviewed: new Date().toISOString(),
-                checkpoint: nextCheckpoint,
-            },
-        });
-
-        dispatch(
-            updateExerciseState({
-                // currentVocabularyWordIndex: Math.floor(
-                //     Math.random() * data.length
-                // ),
-                currentVocabularyWordIndex: data.length - 1,
-            })
-        );
-
-        analiseCurrentExerciseItemsState();
-    };
-
-    const selectNextExerciseItem = () => {};
-
     const analiseCurrentExerciseItemsState = () => {
         data.forEach((vocabularyItem) => {
             // 1. Find daysPassedAfterLastReview
@@ -172,6 +112,209 @@ function Exercise() {
         });
     };
 
+    const makeNextSelection = () => {
+        const nextSelection = [];
+
+        // Пріоритет 1: MISSED Item
+        const missedItemIndex = data.findIndex((vocabularyItem) => {
+            return vocabularyItem.metodology_parameters.status === "MISSED";
+        });
+        if (missedItemIndex !== -1) {
+            nextSelection.push(data[missedItemIndex]);
+        }
+
+        // Пріоритет 2: AGAIN today item
+        const againItemIndex = data.findIndex((vocabularyItem) => {
+            const today = new Date().toISOString().split("T")[0];
+
+            return (
+                vocabularyItem.metodology_parameters.status === "AGAIN" &&
+                vocabularyItem.metodology_parameters.lastReviewed === today
+            );
+        });
+        if (againItemIndex !== -1) {
+            nextSelection.push(data[againItemIndex]);
+        }
+
+        // Пріоритет 3: Item reviewed 1 day ago
+        const yesterdayItemIndex = data.findIndex((vocabularyItem) => {
+            if (!vocabularyItem.metodology_parameters.lastReviewed) {
+                return false;
+            }
+
+            const today = new Date();
+            const lastReviewed = new Date(
+                vocabularyItem.metodology_parameters.lastReviewed
+            );
+            const diffInMs = today - lastReviewed;
+            const daysPassedAfterLastReview = Math.floor(
+                diffInMs / (1000 * 60 * 60 * 24)
+            );
+
+            return (
+                daysPassedAfterLastReview === 1 &&
+                vocabularyItem.metodology_parameters.checkpoint <= 1 &&
+                vocabularyItem.metodology_parameters.status !== "MISSED"
+            );
+        });
+        if (yesterdayItemIndex !== -1) {
+            nextSelection.push(data[yesterdayItemIndex]);
+        }
+
+        // Пріоритет 4: Item reviewed 7 days ago
+        const sevenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
+            if (!vocabularyItem.metodology_parameters.lastReviewed) {
+                return false;
+            }
+
+            const today = new Date();
+            const lastReviewed = new Date(
+                vocabularyItem.metodology_parameters.lastReviewed
+            );
+            const diffInMs = today - lastReviewed;
+            const daysPassedAfterLastReview = Math.floor(
+                diffInMs / (1000 * 60 * 60 * 24)
+            );
+
+            return (
+                daysPassedAfterLastReview === 5 &&
+                vocabularyItem.metodology_parameters.checkpoint === 2 &&
+                vocabularyItem.metodology_parameters.status !== "MISSED"
+            );
+        });
+        if (sevenDaysAgoItemIndex !== -1) {
+            nextSelection.push(data[sevenDaysAgoItemIndex]);
+        }
+
+        // Пріоритет 5: Item reviewed 14 days ago
+        const fourteenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
+            if (!vocabularyItem.metodology_parameters.lastReviewed) {
+                return false;
+            }
+
+            const today = new Date();
+            const lastReviewed = new Date(
+                vocabularyItem.metodology_parameters.lastReviewed
+            );
+            const diffInMs = today - lastReviewed;
+            const daysPassedAfterLastReview = Math.floor(
+                diffInMs / (1000 * 60 * 60 * 24)
+            );
+
+            return (
+                daysPassedAfterLastReview === 7 &&
+                vocabularyItem.metodology_parameters.checkpoint === 7 &&
+                vocabularyItem.metodology_parameters.status !== "MISSED"
+            );
+        });
+        if (fourteenDaysAgoItemIndex !== -1) {
+            nextSelection.push(data[fourteenDaysAgoItemIndex]);
+        }
+
+        // Пріоритет 6: Item reviewed 30 days ago
+        const thirtyDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
+            if (!vocabularyItem.metodology_parameters.lastReviewed) {
+                return false;
+            }
+
+            const today = new Date();
+            const lastReviewed = new Date(
+                vocabularyItem.metodology_parameters.lastReviewed
+            );
+            const diffInMs = today - lastReviewed;
+            const daysPassedAfterLastReview = Math.floor(
+                diffInMs / (1000 * 60 * 60 * 24)
+            );
+
+            return (
+                daysPassedAfterLastReview === 16 &&
+                vocabularyItem.metodology_parameters.checkpoint === 14 &&
+                vocabularyItem.metodology_parameters.status !== "MISSED"
+            );
+        });
+        if (thirtyDaysAgoItemIndex !== -1) {
+            nextSelection.push(data[thirtyDaysAgoItemIndex]);
+        }
+
+        dispatch(
+            updateExerciseState({
+                currentSelection: nextSelection,
+            })
+        );
+    };
+
+    const getNextVocabularyItemIndex = () => {
+        if (
+            exerciseState.currentVocabularyWordIndex ===
+            exerciseState.currentSelection.length - 1
+        ) {
+            makeNextSelection();
+            return 0;
+        } else {
+            return exerciseState.currentVocabularyWordIndex + 1;
+        }
+    };
+
+    const handleNextButtonClick = async (newStatus) => {
+        setUiState((prev) => {
+            return {
+                ...prev,
+                showTranslation: false,
+                showTip: false,
+            };
+        });
+
+        // TODO: Оновити дані поточного слова
+        const currentWord = data[exerciseState.currentVocabularyWordIndex];
+
+        const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
+            return (
+                checkpoint.checkpoint ===
+                currentWord.metodology_parameters.checkpoint
+            );
+        });
+
+        const currentLastReviewed =
+            currentWord.metodology_parameters.lastReviewed;
+        const today = new Date().toISOString().split("T")[0];
+
+        let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
+        if (currentLastReviewed !== today) {
+            if (newStatus === "AGAIN" && currentCheckpointIndex !== 0) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex - 1].checkpoint;
+            } else if (
+                newStatus === "REVIEW" &&
+                checkpoints.length !== currentCheckpointIndex + 1
+            ) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex + 1].checkpoint;
+            }
+        }
+
+        try {
+            await doUpdateVocabularyWord({
+                id: currentWord.id,
+                metodology_parameters: {
+                    status: newStatus,
+                    lastReviewed: new Date().toISOString(),
+                    checkpoint: nextCheckpoint,
+                },
+            });
+
+            const nextVocabularyItemIndex = getNextVocabularyItemIndex();
+
+            dispatch(
+                updateExerciseState({
+                    currentVocabularyWordIndex: nextVocabularyItemIndex,
+                    generateNextStage: true,
+                })
+            );
+        } catch (error) {
+            console.error("Помилка оновлення:", error);
+        }
+    };
+
     const handleCloseModal = useCallback(() => {
         setUiState((prev) => {
             return {
@@ -191,7 +334,10 @@ function Exercise() {
     }, [doFetchVocabularyWords]);
 
     useEffect(() => {
-        if (data.length > 0 && exerciseState.generateNextStage) {
+        if (
+            exerciseState.currentSelection.length > 0 &&
+            exerciseState.generateNextStage
+        ) {
             //console.log(JSON.stringify(data, null, 2));
             doGenerateExerciseVocabularyItem(
                 data[exerciseState.currentVocabularyWordIndex].main_parameters
@@ -201,6 +347,7 @@ function Exercise() {
         data,
         doGenerateExerciseVocabularyItem,
         exerciseState.currentVocabularyWordIndex,
+        exerciseState.currentSelection,
         isUpdatingVocabularyWord,
     ]);
 
@@ -235,7 +382,7 @@ function Exercise() {
                 !uiState.showAddVocabularyWordModal
             ) {
                 event.preventDefault();
-                handleNextButtonClick("GOOD");
+                handleNextButtonClick("REVIEW");
                 return;
             }
 

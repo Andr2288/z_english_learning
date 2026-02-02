@@ -12,6 +12,7 @@ const vocabularyWordsSlice = createSlice({
         data: [],
         exerciseState: {
             exerciseVocabularyItem: null,
+            currentSelection: [],
             currentVocabularyWordIndex: 0,
             isLoading: false,
             generateNextStage: true,
@@ -36,10 +37,6 @@ const vocabularyWordsSlice = createSlice({
             {
                 checkpoint: 14,
                 threshold: 16,
-            },
-            {
-                checkpoint: 30,
-                threshold: 30,
             },
         ],
     },
