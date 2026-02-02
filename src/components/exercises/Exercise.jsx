@@ -90,32 +90,36 @@ function Exercise() {
         const checkpoints = [
             {
                 checkpoint: 0,
-                treshold: 0,
+                threshold: 0,
             },
             {
                 checkpoint: 1,
-                treshold: 1,
+                threshold: 1,
             },
             {
                 checkpoint: 2,
-                treshold: 5,
+                threshold: 5,
             },
             {
                 checkpoint: 7,
-                treshold: 7,
+                threshold: 7,
             },
             {
                 checkpoint: 14,
-                treshold: 16,
+                threshold: 16,
             },
             {
                 checkpoint: 30,
-                treshold: 30,
+                threshold: 30,
             },
         ];
 
         data.forEach((vocabularyItem) => {
             // 1. Find daysPassedAfterLastReview
+
+            if (vocabularyItem.metodology_parameters.status === "MISSED") {
+                return;
+            }
 
             const today = new Date();
             const lastReviewed = new Date(
@@ -144,14 +148,17 @@ function Exercise() {
 
             if (
                 daysPassedAfterLastReview >
-                checkpoints[currentCheckpointIndex].treshold
+                checkpoints[currentCheckpointIndex].threshold
             ) {
                 console.log(
                     `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
-                    Checkpoint: ${vocabularyItem.metodology_parameters.checkpoint}
-                    Last preview: ${vocabularyItem.metodology_parameters.lastReviewed}
-                    Treshold: ${checkpoints[currentCheckpointIndex].treshold}
+                    Current Checkpoint: ${vocabularyItem.metodology_parameters.checkpoint}
+                    Last previewed: ${vocabularyItem.metodology_parameters.lastReviewed}
+                    Threshold for Current Checkpoint: ${checkpoints[currentCheckpointIndex].threshold}
                     Days passed after last review: ${daysPassedAfterLastReview}
+                    ***
+                    Set Checkpoint to: ${checkpoints[currentCheckpointIndex - 1].checkpoint} 
+                    Set Status to: "MISSED"
                     `
                 );
 
