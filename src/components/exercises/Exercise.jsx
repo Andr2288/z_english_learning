@@ -52,67 +52,6 @@ function Exercise() {
         showAddVocabularyWordModal: false,
     });
 
-    const analiseCurrentExerciseItemsState = () => {
-        data.forEach((vocabularyItem) => {
-            // 1. Find daysPassedAfterLastReview
-
-            if (vocabularyItem.metodology_parameters.status === "MISSED") {
-                return;
-            }
-
-            const today = new Date();
-            const lastReviewed = new Date(
-                vocabularyItem.metodology_parameters.lastReviewed
-            );
-            const diffInMs = today - lastReviewed;
-            const daysPassedAfterLastReview = Math.floor(
-                diffInMs / (1000 * 60 * 60 * 24)
-            );
-
-            // 2. Find currentCheckpointIndex
-            const currentCheckpointIndex = checkpoints.findIndex(
-                (checkpoint) => {
-                    return (
-                        checkpoint.checkpoint ===
-                        vocabularyItem.metodology_parameters.checkpoint
-                    );
-                }
-            );
-
-            if (currentCheckpointIndex === 0) {
-                return;
-            }
-
-            // 3. Update Missed Item
-
-            if (
-                daysPassedAfterLastReview >
-                checkpoints[currentCheckpointIndex].threshold
-            ) {
-                console.log(
-                    `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
-                    Current Checkpoint: ${vocabularyItem.metodology_parameters.checkpoint}
-                    Last previewed: ${vocabularyItem.metodology_parameters.lastReviewed}
-                    Threshold for Current Checkpoint: ${checkpoints[currentCheckpointIndex].threshold}
-                    Days passed after last review: ${daysPassedAfterLastReview}
-                    ***
-                    Set Checkpoint to: ${checkpoints[currentCheckpointIndex - 1].checkpoint} 
-                    Set Status to: "MISSED"
-                    `
-                );
-
-                doUpdateVocabularyWord({
-                    id: vocabularyItem.id,
-                    metodology_parameters: {
-                        status: "MISSED",
-                        checkpoint:
-                            checkpoints[currentCheckpointIndex - 1].checkpoint,
-                    },
-                });
-            }
-        });
-    };
-
     const getNextVocabularyItemIndex = () => {
         if (
             exerciseState.currentVocabularyWordIndex ===
@@ -329,7 +268,8 @@ function Exercise() {
                         Упс! Сталася помилка під час генерації вправи :(
                     </p>
                 </div>
-            ) : data.length > 0 && exerciseState.exerciseVocabularyItem ? (
+            ) : exerciseState.currentSelection.length > 0 &&
+              exerciseState.exerciseVocabularyItem ? (
                 <>
                     <div className="w-full mb-8">
                         <h2 className="text-xl font-semibold text-gray-700 mb-10">
@@ -384,7 +324,7 @@ function Exercise() {
                                 </div>
                                 <p className="text-lg text-gray-800 font-semibold">
                                     {
-                                        data[
+                                        exerciseState.currentSelection[
                                             exerciseState
                                                 .currentVocabularyWordIndex
                                         ].main_parameters.text
@@ -409,9 +349,15 @@ function Exercise() {
                         </button>
                     )}
                 </>
-            ) : (
+            ) : data.length === 0 ? (
                 <div className="text-center py-12">
                     <p className="text-gray-500">Немає слів для вивчення :(</p>
+                </div>
+            ) : (
+                <div className="text-center py-12">
+                    <p className="text-gray-500">
+                        Ви вивчили обов'язковий мінімум на сьогодні :)
+                    </p>
                 </div>
             )}
         </div>

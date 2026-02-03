@@ -7,6 +7,74 @@ import {
 } from "./vocabularyWordsThunks";
 import { useCallback, useEffect } from "react";
 
+const findMissedVocabularyItems = (state) => {
+    for (const vocabularyItem of state.data) {
+        // 1. Find daysPassedAfterLastReview
+        if (
+            vocabularyItem.metodology_parameters.status === "MISSED" ||
+            vocabularyItem.metodology_parameters.status === "NEW"
+        ) {
+            continue;
+        }
+
+        const today = new Date();
+        const lastReviewed = new Date(
+            vocabularyItem.metodology_parameters.lastReviewed
+        );
+        const diffInMs = today - lastReviewed;
+        const daysPassedAfterLastReview = Math.floor(
+            diffInMs / (1000 * 60 * 60 * 24)
+        );
+
+        // 2. Find currentCheckpointIndex
+        const currentCheckpointIndex = state.checkpoints.findIndex(
+            (checkpoint) => {
+                return (
+                    checkpoint.checkpoint ===
+                    vocabularyItem.metodology_parameters.checkpoint
+                );
+            }
+        );
+
+        if (currentCheckpointIndex === -1) {
+            continue;
+        }
+
+        // 3. Update Missed Item
+        if (
+            daysPassedAfterLastReview >
+            state.checkpoints[currentCheckpointIndex].threshold
+        ) {
+            // Update Item In Data Array
+            vocabularyItem.metodology_parameters.status = "MISSED";
+
+            if (vocabularyItem.metodology_parameters.checkpoint > 0) {
+                vocabularyItem.metodology_parameters.checkpoint =
+                    state.checkpoints[currentCheckpointIndex - 1].checkpoint;
+            }
+
+            console.log(
+                `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
+                    Current Checkpoint: ${vocabularyItem.metodology_parameters.checkpoint}
+                    Last previewed: ${vocabularyItem.metodology_parameters.lastReviewed}
+                    Threshold for Current Checkpoint: ${state.checkpoints[currentCheckpointIndex].threshold}
+                    Days passed after last review: ${daysPassedAfterLastReview}
+                    ***
+                    Set Checkpoint to: ${
+                        vocabularyItem.metodology_parameters.checkpoint > 0
+                            ? (vocabularyItem.metodology_parameters.checkpoint =
+                                  state.checkpoints[
+                                      currentCheckpointIndex - 1
+                                  ].checkpoint)
+                            : 0
+                    }
+                    Set Status to: "MISSED"
+                    `
+            );
+        }
+    }
+};
+
 const selectNextItems = (data) => {
     const nextSelection = [];
 
@@ -161,6 +229,17 @@ const selectNextItems = (data) => {
         );
     }
 
+    // Пріоритет 6: New Items (30%)
+    const newItemIndex = data.findIndex((vocabularyItem) => {
+        return vocabularyItem.metodology_parameters.status === "NEW";
+    });
+    if (newItemIndex !== -1) {
+        nextSelection.push(data[newItemIndex]);
+        console.log(
+            `Знайшов new Item: ${data[newItemIndex].main_parameters.text}`
+        );
+    }
+
     console.log(nextSelection.length);
     return nextSelection;
 };
@@ -179,7 +258,7 @@ const vocabularyWordsSlice = createSlice({
         checkpoints: [
             {
                 checkpoint: 0,
-                threshold: 0,
+                threshold: 1,
             },
             {
                 checkpoint: 1,
@@ -208,6 +287,7 @@ const vocabularyWordsSlice = createSlice({
         },
         makeNextSelection: (state) => {
             state.exerciseState.currentSelection = [];
+            findMissedVocabularyItems(state);
             state.exerciseState.currentSelection = selectNextItems(state.data);
         },
     },
@@ -244,6 +324,7 @@ const vocabularyWordsSlice = createSlice({
                 },
             }));
 
+            findMissedVocabularyItems(state);
             state.exerciseState.currentSelection = selectNextItems(state.data);
         });
 

@@ -99,8 +99,8 @@ OUTPUT STRUCTURE:
 }
 
 REQUIREMENTS:
-1. Create ONE example sentence for English learners
-3. Ukrainian example must sound native and natural - DO NOT translate word-by-word
+1. Create ONE example sentence for English learners (BEGINNER-A1 Level)
+3. As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
 4. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
 5. Return ONLY valid JSON, no markdown, no explanations
 
@@ -131,12 +131,12 @@ OUTPUT:
 }`;
 
         const response = await client.responses.create({
-            model: "gpt-4o-mini", // швидкий // погана граматика
+            //model: "gpt-4o-mini", // швидкий // погана граматика
             //model: "gpt-4.1-mini", // трішки краща граматика
-            //model: "gpt-5-mini", // довго, але краща граматика
+            model: "gpt-5-mini", // довго, але краща граматика
 
             //reasoning: { effort: "low" },
-            temperature: 0.6,
+            //temperature: 0.6,
             input,
         });
 
