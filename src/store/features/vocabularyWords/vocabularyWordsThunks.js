@@ -21,9 +21,6 @@ const addVocabularyWord = createAsyncThunk(
                     topic: newWord.topic || null,
                     relevant_translations:
                         newWord.relevant_translations || null,
-                    status: "NEW",
-                    last_reviewed: null,
-                    quality: null,
                 },
             ])
             .select();

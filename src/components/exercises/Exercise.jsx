@@ -372,7 +372,8 @@ function Exercise() {
                     hidden={
                         data.length <= 0 ||
                         isLoadingVocabularyWords ||
-                        exerciseState.isLoading
+                        exerciseState.isLoading ||
+                        exerciseState.currentSelection.length <= 0
                     }
                     className={`px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer`}
                 >
@@ -383,7 +384,8 @@ function Exercise() {
                     hidden={
                         data.length <= 0 ||
                         isLoadingVocabularyWords ||
-                        exerciseState.isLoading
+                        exerciseState.isLoading ||
+                        exerciseState.currentSelection.length <= 0
                     }
                     className={`px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer`}
                 >

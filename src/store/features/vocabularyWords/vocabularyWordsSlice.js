@@ -304,9 +304,11 @@ const vocabularyWordsSlice = createSlice({
                 metodology_parameters: {
                     status: word.status,
                     lastReviewed: word.last_reviewed,
-                    quality: word.quality,
+                    checkpoint: word.checkpoint,
                 },
             });
+
+            state.exerciseState.currentSelection = selectNextItems(state.data);
         });
 
         builder.addCase(fetchVocabularyWords.fulfilled, (state, action) => {
