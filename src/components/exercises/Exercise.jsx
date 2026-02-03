@@ -5,6 +5,7 @@ import {
     updateVocabularyWord,
     generateExerciseVocabularyItem,
     updateExerciseState,
+    makeNextSelection,
 } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -112,143 +113,12 @@ function Exercise() {
         });
     };
 
-    const makeNextSelection = () => {
-        const nextSelection = [];
-
-        // Пріоритет 1: MISSED Item
-        const missedItemIndex = data.findIndex((vocabularyItem) => {
-            return vocabularyItem.metodology_parameters.status === "MISSED";
-        });
-        if (missedItemIndex !== -1) {
-            nextSelection.push(data[missedItemIndex]);
-        }
-
-        // Пріоритет 2: AGAIN today item
-        const againItemIndex = data.findIndex((vocabularyItem) => {
-            const today = new Date().toISOString().split("T")[0];
-
-            return (
-                vocabularyItem.metodology_parameters.status === "AGAIN" &&
-                vocabularyItem.metodology_parameters.lastReviewed === today
-            );
-        });
-        if (againItemIndex !== -1) {
-            nextSelection.push(data[againItemIndex]);
-        }
-
-        // Пріоритет 3: Item reviewed 1 day ago
-        const yesterdayItemIndex = data.findIndex((vocabularyItem) => {
-            if (!vocabularyItem.metodology_parameters.lastReviewed) {
-                return false;
-            }
-
-            const today = new Date();
-            const lastReviewed = new Date(
-                vocabularyItem.metodology_parameters.lastReviewed
-            );
-            const diffInMs = today - lastReviewed;
-            const daysPassedAfterLastReview = Math.floor(
-                diffInMs / (1000 * 60 * 60 * 24)
-            );
-
-            return (
-                daysPassedAfterLastReview === 1 &&
-                vocabularyItem.metodology_parameters.checkpoint <= 1 &&
-                vocabularyItem.metodology_parameters.status !== "MISSED"
-            );
-        });
-        if (yesterdayItemIndex !== -1) {
-            nextSelection.push(data[yesterdayItemIndex]);
-        }
-
-        // Пріоритет 4: Item reviewed 7 days ago
-        const sevenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
-            if (!vocabularyItem.metodology_parameters.lastReviewed) {
-                return false;
-            }
-
-            const today = new Date();
-            const lastReviewed = new Date(
-                vocabularyItem.metodology_parameters.lastReviewed
-            );
-            const diffInMs = today - lastReviewed;
-            const daysPassedAfterLastReview = Math.floor(
-                diffInMs / (1000 * 60 * 60 * 24)
-            );
-
-            return (
-                daysPassedAfterLastReview === 5 &&
-                vocabularyItem.metodology_parameters.checkpoint === 2 &&
-                vocabularyItem.metodology_parameters.status !== "MISSED"
-            );
-        });
-        if (sevenDaysAgoItemIndex !== -1) {
-            nextSelection.push(data[sevenDaysAgoItemIndex]);
-        }
-
-        // Пріоритет 5: Item reviewed 14 days ago
-        const fourteenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
-            if (!vocabularyItem.metodology_parameters.lastReviewed) {
-                return false;
-            }
-
-            const today = new Date();
-            const lastReviewed = new Date(
-                vocabularyItem.metodology_parameters.lastReviewed
-            );
-            const diffInMs = today - lastReviewed;
-            const daysPassedAfterLastReview = Math.floor(
-                diffInMs / (1000 * 60 * 60 * 24)
-            );
-
-            return (
-                daysPassedAfterLastReview === 7 &&
-                vocabularyItem.metodology_parameters.checkpoint === 7 &&
-                vocabularyItem.metodology_parameters.status !== "MISSED"
-            );
-        });
-        if (fourteenDaysAgoItemIndex !== -1) {
-            nextSelection.push(data[fourteenDaysAgoItemIndex]);
-        }
-
-        // Пріоритет 6: Item reviewed 30 days ago
-        const thirtyDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
-            if (!vocabularyItem.metodology_parameters.lastReviewed) {
-                return false;
-            }
-
-            const today = new Date();
-            const lastReviewed = new Date(
-                vocabularyItem.metodology_parameters.lastReviewed
-            );
-            const diffInMs = today - lastReviewed;
-            const daysPassedAfterLastReview = Math.floor(
-                diffInMs / (1000 * 60 * 60 * 24)
-            );
-
-            return (
-                daysPassedAfterLastReview === 16 &&
-                vocabularyItem.metodology_parameters.checkpoint === 14 &&
-                vocabularyItem.metodology_parameters.status !== "MISSED"
-            );
-        });
-        if (thirtyDaysAgoItemIndex !== -1) {
-            nextSelection.push(data[thirtyDaysAgoItemIndex]);
-        }
-
-        dispatch(
-            updateExerciseState({
-                currentSelection: nextSelection,
-            })
-        );
-    };
-
     const getNextVocabularyItemIndex = () => {
         if (
             exerciseState.currentVocabularyWordIndex ===
             exerciseState.currentSelection.length - 1
         ) {
-            makeNextSelection();
+            dispatch(makeNextSelection());
             return 0;
         } else {
             return exerciseState.currentVocabularyWordIndex + 1;
@@ -264,8 +134,16 @@ function Exercise() {
             };
         });
 
+        if (exerciseState.currentSelection.length === 0) {
+            console.log("Немає слів для проходження");
+            return;
+        }
+
         // TODO: Оновити дані поточного слова
-        const currentWord = data[exerciseState.currentVocabularyWordIndex];
+        const currentWord =
+            exerciseState.currentSelection[
+                exerciseState.currentVocabularyWordIndex
+            ];
 
         const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
             return (
@@ -340,15 +218,16 @@ function Exercise() {
         ) {
             //console.log(JSON.stringify(data, null, 2));
             doGenerateExerciseVocabularyItem(
-                data[exerciseState.currentVocabularyWordIndex].main_parameters
+                exerciseState.currentSelection[
+                    exerciseState.currentVocabularyWordIndex
+                ].main_parameters
             );
         }
     }, [
-        data,
         doGenerateExerciseVocabularyItem,
-        exerciseState.currentVocabularyWordIndex,
         exerciseState.currentSelection,
-        isUpdatingVocabularyWord,
+        exerciseState.currentVocabularyWordIndex,
+        exerciseState.generateNextStage,
     ]);
 
     useEffect(() => {
