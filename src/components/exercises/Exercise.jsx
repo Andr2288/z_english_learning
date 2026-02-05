@@ -317,7 +317,7 @@ function Exercise() {
                         <div className="bg-blue-100/80 rounded-xl p-4 sm:p-5 border-l-4 border-blue-400">
                             {/* text-base: мобільні (16px)
                                 sm:text-xl: планшети+ (20px) */}
-                            <p className="text-base sm:text-xl text-gray-800 leading-relaxed font-mono tracking-wide">
+                            <p className="text-xl sm:text-xl text-gray-800 leading-relaxed font-mono tracking-wide">
                                 {
                                     exerciseState.exerciseVocabularyItem
                                         .example_ukr
@@ -333,7 +333,7 @@ function Exercise() {
                                 sm:flex-row: на планшетах+ в рядок
                                 gap-2: мобільний зазор (0.5rem)
                                 sm:gap-1.5: планшет+ зазор (0.375rem) */}
-                            <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-1.5 bg-green-50 border-2 border-green-200 rounded-xl p-3">
+                            <div className="flex flex-row justify-center items-center gap-2 sm:gap-1.5 bg-green-50 border-2 border-green-200 rounded-xl p-3">
                                 <button
                                     onClick={() =>
                                         handlePlayAudio(
@@ -343,13 +343,13 @@ function Exercise() {
                                     }
                                     disabled={isGeneratingSpeech}
                                     // flex-shrink-0: запобігає стисканню кнопки на мобільних
-                                    className="flex items-center justify-center hover:bg-green-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 flex-shrink-0"
+                                    className="flex items-center justify-center hover:bg-green-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 shrink-0"
                                     title="Відтворити аудіо"
                                 >
                                     <Volume2 className="w-5 h-5 text-green-600" />
                                 </button>
                                 {/* break-words: переносить довгі слова на новий рядок на мобільних */}
-                                <p className="text-base sm:text-lg text-gray-800 font-semibold break-words">
+                                <p className="text-base sm:text-lg text-gray-800 font-semibold wrap-break-word">
                                     {highlightUsedForm(
                                         exerciseState.exerciseVocabularyItem
                                             .example_eng,
@@ -391,7 +391,7 @@ function Exercise() {
                             {/* Аналогічна flex структура як для перекладу:
                                 flex-col: мобільний макет в колону
                                 sm:flex-row: планшет+ макет в рядок */}
-                            <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-3">
+                            <div className="flex flex-row justify-center items-center gap-2 sm:gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-3">
                                 <button
                                     onClick={() =>
                                         handlePlayAudio(
@@ -402,12 +402,12 @@ function Exercise() {
                                         )
                                     }
                                     disabled={isGeneratingSpeech}
-                                    className="flex items-center justify-center hover:bg-violet-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 flex-shrink-0"
+                                    className="flex items-center justify-center hover:bg-violet-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 shrink-0"
                                     title="Відтворити аудіо"
                                 >
                                     <Volume2 className="w-5 h-5 text-violet-600" />
                                 </button>
-                                <p className="text-base sm:text-lg text-gray-800 font-semibold break-words">
+                                <p className="text-base sm:text-lg text-gray-800 font-semibold wrap-break-word">
                                     {
                                         exerciseState.currentSelection[
                                             exerciseState
@@ -484,7 +484,7 @@ function Exercise() {
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
-                    className={`px-6 sm:px-22.5 py-2.5 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-lg transition-all duration-200 flex items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
+                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-[16px] sm:text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Повторити
                 </button>
@@ -498,7 +498,7 @@ function Exercise() {
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
-                    className={`px-6 sm:px-22.5 py-2.5 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-lg transition-all duration-200 flex items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
+                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-[16px] sm:text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Добре
                 </button>
