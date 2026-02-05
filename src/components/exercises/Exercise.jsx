@@ -382,7 +382,7 @@ function Exercise() {
                                     showTranslation: true,
                                 }))
                             }
-                            className="mb-4 sm:mb-6 px-6 py-3 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex justify-center items-center gap-2 text-[16px] w-full sm:w-auto"
+                            className="mb-4 sm:mb-6 px-6 py-3 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex justify-center items-center gap-2 text-lg w-full sm:w-auto"
                         >
                             <Eye className="w-5 h-5" />
                             Показати переклад
@@ -437,7 +437,7 @@ function Exercise() {
                                     };
                                 })
                             }
-                            className="mb-4 px-6 py-3 border-2 border-gray-200 hover:border-violet-400 hover:bg-violet-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex justify-center items-center gap-2 text-[16px] w-full sm:w-auto"
+                            className="mb-4 px-6 py-3 border-2 border-gray-200 hover:border-violet-400 hover:bg-violet-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex justify-center items-center gap-2 text-lg w-full sm:w-auto"
                         >
                             <Lightbulb className="w-5 h-5" />
                             Показати підказку
