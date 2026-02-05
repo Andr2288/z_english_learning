@@ -349,7 +349,7 @@ function Exercise() {
                                     <Volume2 className="w-5 h-5 text-green-600" />
                                 </button>
                                 {/* break-words: переносить довгі слова на новий рядок на мобільних */}
-                                <p className="text-lg text-gray-800 font-semibold wrap-break-word">
+                                <p className="text-[16px] text-gray-800 font-semibold wrap-break-word">
                                     {highlightUsedForm(
                                         exerciseState.exerciseVocabularyItem
                                             .example_eng,
@@ -391,7 +391,7 @@ function Exercise() {
                             {/* Аналогічна flex структура як для перекладу:
                                 flex-col: мобільний макет в колону
                                 sm:flex-row: планшет+ макет в рядок */}
-                            <div className="flex flex-row justify-center items-center gap-2 sm:gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-3">
+                            <div className="flex flex-row justify-center items-center gap-2 sm:gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-2">
                                 <button
                                     onClick={() =>
                                         handlePlayAudio(
@@ -407,7 +407,7 @@ function Exercise() {
                                 >
                                     <Volume2 className="w-5 h-5 text-violet-600" />
                                 </button>
-                                <p className="text-lg text-gray-800 font-semibold wrap-break-word">
+                                <p className="text-[16px] text-gray-800 font-semibold wrap-break-word">
                                     {
                                         exerciseState.currentSelection[
                                             exerciseState
