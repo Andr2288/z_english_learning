@@ -472,7 +472,7 @@ function Exercise() {
                 sm:flex-row: планшети+ - кнопки в рядок */}
             {/* gap-2: мобільний зазор між кнопками (0.5rem = 8px)
                 sm:gap-3: планшети+ зазор (0.75rem = 12px) */}
-            <div className="self-stretch flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+            <div className="self-stretch flex flex-col sm:flex-row justify-center gap-3">
                 {/* АДАПТИВНА КНОПКА "ПОВТОРИТИ" */}
                 {/* px-6: мобільна паддінг по сторонам (1.5rem = 24px)
                     sm:px-22.5: планшети+ паддінг (5.625rem = 90px) */}
