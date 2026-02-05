@@ -455,7 +455,7 @@ function Exercise() {
     );
 
     return (
-        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-8 lg:p-12 pt-12 lg:pt-16 pb-10 mx-auto">
+        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-150 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-8 lg:p-12 pt-12 lg:pt-16 pb-10 mx-auto">
             {content}
 
             {/* АДАПТИВНИЙ КОНТЕЙНЕР ДЛЯ КНОПОК */}
