@@ -309,7 +309,7 @@ function Exercise() {
                     <div className="w-full mb-6 sm:mb-8">
                         {/* text-lg: мобільні (1.125rem = 18px)
                             sm:text-xl: планшети+ (1.25rem = 20px) */}
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4 sm:mb-10">
+                        <h2 className="text-xl font-semibold text-gray-700 mb-10">
                             Перекладіть речення:
                         </h2>
                         {/* p-4: мобільні паддинг
@@ -455,7 +455,7 @@ function Exercise() {
     );
 
     return (
-        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-150 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-6 lg:p-12 pt-12 lg:pt-16 pb-10 mx-4 sm:mx-auto">
+        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-6 lg:p-12 pt-12 lg:pt-16 pb-10 mx-4 sm:mx-auto">
             {content}
 
             {/* АДАПТИВНИЙ КОНТЕЙНЕР ДЛЯ КНОПОК */}
