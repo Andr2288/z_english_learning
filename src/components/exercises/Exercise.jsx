@@ -309,7 +309,7 @@ function Exercise() {
                     <div className="w-full mb-6 sm:mb-8">
                         {/* text-lg: мобільні (1.125rem = 18px)
                             sm:text-xl: планшети+ (1.25rem = 20px) */}
-                        <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 sm:mb-10">
+                        <h2 className="text-xl font-semibold text-gray-700 mb-4 sm:mb-10">
                             Перекладіть речення:
                         </h2>
                         {/* p-4: мобільні паддинг
@@ -317,7 +317,7 @@ function Exercise() {
                         <div className="bg-blue-100/80 rounded-xl p-4 sm:p-5 border-l-4 border-blue-400">
                             {/* text-base: мобільні (16px)
                                 sm:text-xl: планшети+ (20px) */}
-                            <p className="text-xl sm:text-xl text-gray-800 leading-relaxed font-mono tracking-wide">
+                            <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide">
                                 {
                                     exerciseState.exerciseVocabularyItem
                                         .example_ukr
@@ -349,7 +349,7 @@ function Exercise() {
                                     <Volume2 className="w-5 h-5 text-green-600" />
                                 </button>
                                 {/* break-words: переносить довгі слова на новий рядок на мобільних */}
-                                <p className="text-base sm:text-lg text-gray-800 font-semibold wrap-break-word">
+                                <p className="text-lg text-gray-800 font-semibold wrap-break-word">
                                     {highlightUsedForm(
                                         exerciseState.exerciseVocabularyItem
                                             .example_eng,
@@ -378,9 +378,9 @@ function Exercise() {
                                     showTranslation: true,
                                 }))
                             }
-                            className="mb-4 sm:mb-6 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex items-center gap-2 text-sm sm:text-base w-full sm:w-auto"
+                            className="mb-4 sm:mb-6 px-6 py-3 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex justify-center items-center gap-2 text-sm w-full sm:w-auto"
                         >
-                            <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <Eye className="w-5 h-5" />
                             Показати переклад
                         </button>
                     )}
@@ -407,7 +407,7 @@ function Exercise() {
                                 >
                                     <Volume2 className="w-5 h-5 text-violet-600" />
                                 </button>
-                                <p className="text-base sm:text-lg text-gray-800 font-semibold wrap-break-word">
+                                <p className="text-lg text-gray-800 font-semibold wrap-break-word">
                                     {
                                         exerciseState.currentSelection[
                                             exerciseState
@@ -429,7 +429,7 @@ function Exercise() {
                                     };
                                 })
                             }
-                            className="mb-4 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-200 hover:border-violet-400 hover:bg-violet-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex items-center gap-2 text-sm sm:text-base w-full sm:w-auto"
+                            className="mb-4 px-6 py-3 border-2 border-gray-200 hover:border-violet-400 hover:bg-violet-50 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-lg hover:scale-102 flex justify-center items-center gap-2 text-sm w-full sm:w-auto"
                         >
                             <Lightbulb className="w-5 h-5" />
                             Показати підказку
@@ -455,7 +455,7 @@ function Exercise() {
     );
 
     return (
-        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-4 sm:p-8 lg:p-12 pt-8 sm:pt-12 lg:pt-16 pb-6 sm:pb-10 mx-auto">
+        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-8 lg:p-12 pt-12 lg:pt-16 pb-10 mx-auto">
             {content}
 
             {/* АДАПТИВНИЙ КОНТЕЙНЕР ДЛЯ КНОПОК */}
@@ -484,7 +484,7 @@ function Exercise() {
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
-                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-[16px] sm:text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
+                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Повторити
                 </button>
@@ -498,7 +498,7 @@ function Exercise() {
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
-                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-[16px] sm:text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
+                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Добре
                 </button>
