@@ -484,7 +484,7 @@ function Exercise() {
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
-                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
+                    className={`px-6 sm:px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Повторити
                 </button>
@@ -498,7 +498,7 @@ function Exercise() {
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
-                    className={`px-6 sm:px-22.5 py-3 sm:py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
+                    className={`px-6 sm:px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Добре
                 </button>
