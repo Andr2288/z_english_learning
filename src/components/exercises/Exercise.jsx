@@ -349,7 +349,7 @@ function Exercise() {
                                     <Volume2 className="w-5 h-5 text-green-600" />
                                 </button>
                                 {/* break-words: переносить довгі слова на новий рядок на мобільних */}
-                                <p className="text-[16px] text-gray-800 font-semibold wrap-break-word">
+                                <p className="text-lg text-gray-800 font-semibold wrap-break-word">
                                     {highlightUsedForm(
                                         exerciseState.exerciseVocabularyItem
                                             .example_eng,
@@ -407,7 +407,7 @@ function Exercise() {
                                 >
                                     <Volume2 className="w-5 h-5 text-violet-600" />
                                 </button>
-                                <p className="text-[16px] text-gray-800 font-semibold wrap-break-word">
+                                <p className="text-lg text-gray-800 font-semibold wrap-break-word">
                                     {
                                         exerciseState.currentSelection[
                                             exerciseState
