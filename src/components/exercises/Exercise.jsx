@@ -346,7 +346,11 @@ function Exercise() {
                                     className="flex items-center justify-center hover:bg-green-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 shrink-0"
                                     title="Відтворити аудіо"
                                 >
-                                    <Volume2 className="w-6 sm:w-5 h-6 sm:h-5 text-green-600" />
+                                    {isGeneratingSpeech ? (
+                                        <Loader className="w-6 sm:w-5 h-6 sm:h-5 animate-spin text-green-600" />
+                                    ) : (
+                                        <Volume2 className="w-6 sm:w-5 h-6 sm:h-5 text-green-600" />
+                                    )}
                                 </button>
                                 {/* break-words: переносить довгі слова на новий рядок на мобільних */}
                                 <p className="text-lg text-gray-800 font-semibold wrap-break-word">
@@ -405,7 +409,11 @@ function Exercise() {
                                     className="flex items-center justify-center hover:bg-violet-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 shrink-0"
                                     title="Відтворити аудіо"
                                 >
-                                    <Volume2 className="w-6 sm:w-5 h-6 sm:h-5 text-violet-600" />
+                                    {isGeneratingSpeech ? (
+                                        <Loader className="w-6 sm:w-5 h-6 sm:h-5 animate-spin text-violet-600" />
+                                    ) : (
+                                        <Volume2 className="w-6 sm:w-5 h-6 sm:h-5 text-violet-600" />
+                                    )}
                                 </button>
                                 <p className="text-lg text-gray-800 font-semibold wrap-break-word">
                                     {
