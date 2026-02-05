@@ -4,6 +4,7 @@ import {
     fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
+    generateSpeech,
     updateExerciseState,
     makeNextSelection,
 } from "../../store";
@@ -11,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { useState, useEffect, useCallback } from "react";
 
-import { Loader, Eye, Lightbulb } from "lucide-react";
+import { Loader, Eye, Lightbulb, Volume2 } from "lucide-react";
 
 import Modal from "../common/Modal.jsx";
 
@@ -39,6 +40,9 @@ function Exercise() {
         isLoadingExerciseVocabularyItem,
         generateExerciseVocabularyItemError,
     ] = useThunk(generateExerciseVocabularyItem);
+
+    const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
+        useThunk(generateSpeech);
 
     const { data, exerciseState, checkpoints } = useSelector((state) => {
         return state.vocabularyWords;
@@ -129,6 +133,19 @@ function Exercise() {
             );
         } catch (error) {
             console.error("Помилка оновлення:", error);
+        }
+    };
+
+    const handlePlayAudio = async (text) => {
+        try {
+            // Генеруємо аудіо через OpenAI TTS API
+            const audioUrl = await doGenerateSpeech(text);
+
+            // Відтворюємо нещодавно згенероване аудіо
+            const audio = new Audio(audioUrl);
+            audio.play();
+        } catch (error) {
+            console.error("Помилка відтворення аудіо:", error);
         }
     };
 
@@ -288,9 +305,19 @@ function Exercise() {
                     {uiState.showTranslation ? (
                         <div className="w-full mb-4">
                             <div className="flex justify-center items-center gap-1.5 bg-green-50 border-2 border-green-200 rounded-xl p-3">
-                                <div className="flex items-center justify-center">
-                                    <Eye className="w-5 h-5 text-green-600" />
-                                </div>
+                                <button
+                                    onClick={() =>
+                                        handlePlayAudio(
+                                            exerciseState.exerciseVocabularyItem
+                                                .example_eng
+                                        )
+                                    }
+                                    disabled={isGeneratingSpeech}
+                                    className="flex items-center justify-center hover:bg-green-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50"
+                                    title="Відтворити аудіо"
+                                >
+                                    <Volume2 className="w-5 h-5 text-green-600" />
+                                </button>
                                 <p className="text-lg text-gray-800 font-semibold">
                                     {highlightUsedForm(
                                         exerciseState.exerciseVocabularyItem
@@ -319,9 +346,21 @@ function Exercise() {
                     {uiState.showTip ? (
                         <div className="w-full mb-4">
                             <div className="flex justify-center items-center gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-3">
-                                <div className="flex items-center justify-center">
-                                    <Lightbulb className="w-5 h-5 text-violet-600" />
-                                </div>
+                                <button
+                                    onClick={() =>
+                                        handlePlayAudio(
+                                            exerciseState.currentSelection[
+                                                exerciseState
+                                                    .currentVocabularyWordIndex
+                                            ].main_parameters.text
+                                        )
+                                    }
+                                    disabled={isGeneratingSpeech}
+                                    className="flex items-center justify-center hover:bg-violet-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50"
+                                    title="Відтворити аудіо"
+                                >
+                                    <Volume2 className="w-5 h-5 text-violet-600" />
+                                </button>
                                 <p className="text-lg text-gray-800 font-semibold">
                                     {
                                         exerciseState.currentSelection[

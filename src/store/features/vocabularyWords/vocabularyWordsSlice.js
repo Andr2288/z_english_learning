@@ -21,10 +21,10 @@ const findMissedVocabularyItems = (state) => {
         const lastReviewed = new Date(
             vocabularyItem.metodology_parameters.lastReviewed
         );
+        today.setHours(0, 0, 0, 0);
+        lastReviewed.setHours(0, 0, 0, 0);
         const diffInMs = today - lastReviewed;
-        const daysPassedAfterLastReview = Math.floor(
-            diffInMs / (1000 * 60 * 60 * 24)
-        );
+        const daysPassedAfterLastReview = diffInMs / (1000 * 60 * 60 * 24);
 
         // 2. Find currentCheckpointIndex
         const currentCheckpointIndex = state.checkpoints.findIndex(
@@ -89,7 +89,121 @@ const selectNextItems = (data) => {
         );
     }
 
-    // Пріоритет 2: AGAIN today item
+    // Пріоритет 2: Item reviewed 1 day ago
+    const yesterdayItemIndex = data.findIndex((vocabularyItem) => {
+        if (!vocabularyItem.metodology_parameters.lastReviewed) {
+            return false;
+        }
+
+        const today = new Date();
+        const lastReviewed = new Date(
+            vocabularyItem.metodology_parameters.lastReviewed
+        );
+        today.setHours(0, 0, 0, 0);
+        lastReviewed.setHours(0, 0, 0, 0);
+        const diffInMs = today - lastReviewed;
+        const daysPassedAfterLastReview = diffInMs / (1000 * 60 * 60 * 24);
+
+        return (
+            daysPassedAfterLastReview === 1 &&
+            vocabularyItem.metodology_parameters.checkpoint <= 1 &&
+            vocabularyItem.metodology_parameters.status !== "MISSED"
+        );
+    });
+    if (yesterdayItemIndex !== -1) {
+        nextSelection.push(data[yesterdayItemIndex]);
+        console.log(
+            `Знайшов Item reviewed 1 day ago: ${data[yesterdayItemIndex].main_parameters.text}`
+        );
+    }
+
+    // Пріоритет 3: Item reviewed 7 days ago
+    const sevenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
+        if (!vocabularyItem.metodology_parameters.lastReviewed) {
+            return false;
+        }
+
+        const today = new Date();
+        const lastReviewed = new Date(
+            vocabularyItem.metodology_parameters.lastReviewed
+        );
+        today.setHours(0, 0, 0, 0);
+        lastReviewed.setHours(0, 0, 0, 0);
+        const diffInMs = today - lastReviewed;
+        const daysPassedAfterLastReview = diffInMs / (1000 * 60 * 60 * 24);
+
+        return (
+            daysPassedAfterLastReview === 5 &&
+            vocabularyItem.metodology_parameters.checkpoint === 2 &&
+            vocabularyItem.metodology_parameters.status !== "MISSED"
+        );
+    });
+    if (sevenDaysAgoItemIndex !== -1) {
+        nextSelection.push(data[sevenDaysAgoItemIndex]);
+        console.log(
+            `Знайшов Item reviewed 7 days ago: ${data[sevenDaysAgoItemIndex].main_parameters.text}`
+        );
+    }
+
+    // Пріоритет 4: Item reviewed 14 days ago
+    const fourteenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
+        if (!vocabularyItem.metodology_parameters.lastReviewed) {
+            return false;
+        }
+
+        const today = new Date();
+        const lastReviewed = new Date(
+            vocabularyItem.metodology_parameters.lastReviewed
+        );
+        today.setHours(0, 0, 0, 0);
+        lastReviewed.setHours(0, 0, 0, 0);
+
+        const diffInMs = today - lastReviewed;
+        const daysPassedAfterLastReview = diffInMs / (1000 * 60 * 60 * 24);
+
+        return (
+            daysPassedAfterLastReview === 7 &&
+            vocabularyItem.metodology_parameters.checkpoint === 7 &&
+            vocabularyItem.metodology_parameters.status !== "MISSED"
+        );
+    });
+    if (fourteenDaysAgoItemIndex !== -1) {
+        nextSelection.push(data[fourteenDaysAgoItemIndex]);
+        console.log(
+            `Знайшов Item reviewed 14 days ago: ${data[fourteenDaysAgoItemIndex].main_parameters.text}`
+        );
+    }
+
+    // Пріоритет 5: Item reviewed 30 days ago
+    const thirtyDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
+        if (!vocabularyItem.metodology_parameters.lastReviewed) {
+            return false;
+        }
+
+        const today = new Date();
+        const lastReviewed = new Date(
+            vocabularyItem.metodology_parameters.lastReviewed
+        );
+        today.setHours(0, 0, 0, 0);
+        lastReviewed.setHours(0, 0, 0, 0);
+
+        const diffInMs = today - lastReviewed;
+        const daysPassedAfterLastReview = diffInMs / (1000 * 60 * 60 * 24);
+
+        return (
+            daysPassedAfterLastReview === 16 &&
+            vocabularyItem.metodology_parameters.checkpoint === 14 &&
+            vocabularyItem.metodology_parameters.status !== "MISSED"
+        );
+    });
+    if (thirtyDaysAgoItemIndex !== -1) {
+        nextSelection.push(data[thirtyDaysAgoItemIndex]);
+        console.log(
+            `Знайшов Item reviewed 30 days ago: ${data[thirtyDaysAgoItemIndex].main_parameters.text}`
+        );
+    }
+
+    // Пріоритет 6: AGAIN today item
     const againItemIndex = data.findIndex((vocabularyItem) => {
         if (!vocabularyItem.metodology_parameters.lastReviewed) {
             return false;
@@ -116,120 +230,7 @@ const selectNextItems = (data) => {
         );
     }
 
-    // Пріоритет 3: Item reviewed 1 day ago
-    const yesterdayItemIndex = data.findIndex((vocabularyItem) => {
-        if (!vocabularyItem.metodology_parameters.lastReviewed) {
-            return false;
-        }
-
-        const today = new Date();
-        const lastReviewed = new Date(
-            vocabularyItem.metodology_parameters.lastReviewed
-        );
-
-        const diffInMs = today - lastReviewed;
-        const daysPassedAfterLastReview = Math.floor(
-            diffInMs / (1000 * 60 * 60 * 24)
-        );
-
-        return (
-            daysPassedAfterLastReview === 1 &&
-            vocabularyItem.metodology_parameters.checkpoint <= 1 &&
-            vocabularyItem.metodology_parameters.status !== "MISSED"
-        );
-    });
-    if (yesterdayItemIndex !== -1) {
-        nextSelection.push(data[yesterdayItemIndex]);
-        console.log(
-            `Знайшов Item reviewed 1 day ago: ${data[yesterdayItemIndex].main_parameters.text}`
-        );
-    }
-
-    // Пріоритет 4: Item reviewed 7 days ago
-    const sevenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
-        if (!vocabularyItem.metodology_parameters.lastReviewed) {
-            return false;
-        }
-
-        const today = new Date();
-        const lastReviewed = new Date(
-            vocabularyItem.metodology_parameters.lastReviewed
-        );
-        const diffInMs = today - lastReviewed;
-        const daysPassedAfterLastReview = Math.floor(
-            diffInMs / (1000 * 60 * 60 * 24)
-        );
-
-        return (
-            daysPassedAfterLastReview === 5 &&
-            vocabularyItem.metodology_parameters.checkpoint === 2 &&
-            vocabularyItem.metodology_parameters.status !== "MISSED"
-        );
-    });
-    if (sevenDaysAgoItemIndex !== -1) {
-        nextSelection.push(data[sevenDaysAgoItemIndex]);
-        console.log(
-            `Знайшов Item reviewed 7 days ago: ${data[sevenDaysAgoItemIndex].main_parameters.text}`
-        );
-    }
-
-    // Пріоритет 5: Item reviewed 14 days ago
-    const fourteenDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
-        if (!vocabularyItem.metodology_parameters.lastReviewed) {
-            return false;
-        }
-
-        const today = new Date();
-        const lastReviewed = new Date(
-            vocabularyItem.metodology_parameters.lastReviewed
-        );
-        const diffInMs = today - lastReviewed;
-        const daysPassedAfterLastReview = Math.floor(
-            diffInMs / (1000 * 60 * 60 * 24)
-        );
-
-        return (
-            daysPassedAfterLastReview === 7 &&
-            vocabularyItem.metodology_parameters.checkpoint === 7 &&
-            vocabularyItem.metodology_parameters.status !== "MISSED"
-        );
-    });
-    if (fourteenDaysAgoItemIndex !== -1) {
-        nextSelection.push(data[fourteenDaysAgoItemIndex]);
-        console.log(
-            `Знайшов Item reviewed 14 days ago: ${data[fourteenDaysAgoItemIndex].main_parameters.text}`
-        );
-    }
-
-    // Пріоритет 6: Item reviewed 30 days ago
-    const thirtyDaysAgoItemIndex = data.findIndex((vocabularyItem) => {
-        if (!vocabularyItem.metodology_parameters.lastReviewed) {
-            return false;
-        }
-
-        const today = new Date();
-        const lastReviewed = new Date(
-            vocabularyItem.metodology_parameters.lastReviewed
-        );
-        const diffInMs = today - lastReviewed;
-        const daysPassedAfterLastReview = Math.floor(
-            diffInMs / (1000 * 60 * 60 * 24)
-        );
-
-        return (
-            daysPassedAfterLastReview === 16 &&
-            vocabularyItem.metodology_parameters.checkpoint === 14 &&
-            vocabularyItem.metodology_parameters.status !== "MISSED"
-        );
-    });
-    if (thirtyDaysAgoItemIndex !== -1) {
-        nextSelection.push(data[thirtyDaysAgoItemIndex]);
-        console.log(
-            `Знайшов Item reviewed 30 days ago: ${data[thirtyDaysAgoItemIndex].main_parameters.text}`
-        );
-    }
-
-    // Пріоритет 6: New Items (30%)
+    // Пріоритет 7: New Items (30%)
     const newItemIndex = data.findIndex((vocabularyItem) => {
         return vocabularyItem.metodology_parameters.status === "NEW";
     });
@@ -308,7 +309,11 @@ const vocabularyWordsSlice = createSlice({
                 },
             });
 
-            state.exerciseState.currentSelection = selectNextItems(state.data);
+            if (state.exerciseState.currentSelection.length === 0) {
+                state.exerciseState.currentSelection = selectNextItems(
+                    state.data
+                );
+            }
         });
 
         builder.addCase(fetchVocabularyWords.fulfilled, (state, action) => {

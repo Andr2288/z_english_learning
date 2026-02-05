@@ -70,6 +70,14 @@ const updateVocabularyWord = createAsyncThunk(
     }
 );
 
+const GPTModel = {
+    GPT4oMini: "gpt-4o-mini",
+    GPT41Mini: "gpt-4.1-mini",
+    GPT5Mini: "gpt-5-mini",
+};
+
+Object.freeze(GPTModel);
+
 const generateExerciseVocabularyItem = createAsyncThunk(
     "vocabularyWords/generateExerciseVocabularyItem",
     async (vocabularyWordMainParameters) => {
@@ -96,10 +104,11 @@ OUTPUT STRUCTURE:
 }
 
 REQUIREMENTS:
-1. Create ONE example sentence for English learners (BEGINNER-A1 Level)
+1. Create ONE example sentence for English learners (BEGINNER Level - A1-A2)
 3. As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
-4. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
-5. Return ONLY valid JSON, no markdown, no explanations
+4. Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
+5. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
+6. Return ONLY valid JSON, no markdown, no explanations
 
 A GOOD EXAMPLE FOR A VERB PHRASE:
 
@@ -130,10 +139,10 @@ OUTPUT:
         const response = await client.responses.create({
             //model: "gpt-4o-mini", // швидкий // погана граматика
             //model: "gpt-4.1-mini", // трішки краща граматика
-            model: "gpt-5-mini", // довго, але краща граматика
+            model: GPTModel.GPT41Mini, // довго, але краща граматика
 
             //reasoning: { effort: "low" },
-            //temperature: 0.6,
+            temperature: 0.6,
             input,
         });
 
@@ -148,9 +157,44 @@ OUTPUT:
     }
 );
 
+const TTSVoice = {
+    Alloy: "alloy",
+    Ash: "ash",
+    Ballad: "ballad",
+    Coral: "coral",
+    Echo: "echo",
+    Fable: "fable",
+    Nova: "nova",
+    Onyx: "onyx",
+    Shimmer: "shimmer",
+    Verse: "verse",
+    Marin: "marin",
+    Cedar: "cedar",
+};
+
+Object.freeze(TTSVoice);
+
+const generateSpeech = createAsyncThunk(
+    "vocabularyWords/generateSpeech",
+    async (text) => {
+        const response = await client.audio.speech.create({
+            model: "gpt-4o-mini-tts",
+            voice: TTSVoice.Marin,
+            input: text,
+        });
+
+        const arrayBuffer = await response.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+        const url = URL.createObjectURL(blob);
+
+        return url;
+    }
+);
+
 export {
     addVocabularyWord,
     fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
+    generateSpeech,
 };
