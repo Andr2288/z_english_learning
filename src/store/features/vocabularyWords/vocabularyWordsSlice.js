@@ -203,7 +203,23 @@ const selectNextItems = (data) => {
         );
     }
 
-    // Пріоритет 6: AGAIN today item
+    // Пріоритет 6: New Items (30%)
+    const newItems = data
+        .filter(
+            (vocabularyItem) =>
+                vocabularyItem.metodology_parameters.status === "NEW"
+        )
+        .slice(0, 3); // беремо рівно 3
+
+    if (newItems.length > 0) {
+        nextSelection.push(...newItems);
+
+        newItems.forEach((item) => {
+            console.log(`Знайшов new Item: ${item.main_parameters.text}`);
+        });
+    }
+
+    // Пріоритет 7: AGAIN today item
     const againItemIndex = data.findIndex((vocabularyItem) => {
         if (!vocabularyItem.metodology_parameters.lastReviewed) {
             return false;
@@ -227,17 +243,6 @@ const selectNextItems = (data) => {
         nextSelection.push(data[againItemIndex]);
         console.log(
             `Знайшов AGAIN today item: ${data[againItemIndex].main_parameters.text}`
-        );
-    }
-
-    // Пріоритет 7: New Items (30%)
-    const newItemIndex = data.findIndex((vocabularyItem) => {
-        return vocabularyItem.metodology_parameters.status === "NEW";
-    });
-    if (newItemIndex !== -1) {
-        nextSelection.push(data[newItemIndex]);
-        console.log(
-            `Знайшов new Item: ${data[newItemIndex].main_parameters.text}`
         );
     }
 
