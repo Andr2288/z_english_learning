@@ -16,33 +16,17 @@ import { Loader, Eye, Lightbulb, Volume2 } from "lucide-react";
 
 import Modal from "../common/Modal.jsx";
 
-function Exercise() {
-    const [
-        doAddVocabularyWord,
-        isAddingVocabularyWord,
-        addVocabularyWordError,
-    ] = useThunk(addVocabularyWord);
+const TranslateSentenceExercise = () => {
+    const [doAddVocabularyWord, isAddingVocabularyWord, addVocabularyWordError] = useThunk(addVocabularyWord);
 
-    const [
-        doFetchVocabularyWords,
-        isLoadingVocabularyWords,
-        loadingVocabularyWordsError,
-    ] = useThunk(fetchVocabularyWords);
+    const [doFetchVocabularyWords, isLoadingVocabularyWords, loadingVocabularyWordsError] = useThunk(fetchVocabularyWords);
 
-    const [
-        doUpdateVocabularyWord,
-        isUpdatingVocabularyWord,
-        updateVocabularyWordError,
-    ] = useThunk(updateVocabularyWord);
+    const [doUpdateVocabularyWord, isUpdatingVocabularyWord, updateVocabularyWordError] = useThunk(updateVocabularyWord);
 
-    const [
-        doGenerateExerciseVocabularyItem,
-        isLoadingExerciseVocabularyItem,
-        generateExerciseVocabularyItemError,
-    ] = useThunk(generateExerciseVocabularyItem);
+    const [doGenerateExerciseVocabularyItem, isLoadingExerciseVocabularyItem, generateExerciseVocabularyItemError] =
+        useThunk(generateExerciseVocabularyItem);
 
-    const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
-        useThunk(generateSpeech);
+    const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] = useThunk(generateSpeech);
 
     const { data, exerciseState, checkpoints } = useSelector((state) => {
         return state.vocabularyWords;
@@ -57,13 +41,11 @@ function Exercise() {
     });
 
     const getNextVocabularyItemIndex = () => {
-        if (
-            exerciseState.currentVocabularyWordIndex ===
-            exerciseState.currentSelection.length - 1
-        ) {
+        if (exerciseState.currentVocabularyWordIndex === exerciseState.currentSelection.length - 1) {
             dispatch(makeNextSelection());
             return 0;
         } else {
+            console.log(exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex]);
             return exerciseState.currentVocabularyWordIndex + 1;
         }
     };
@@ -83,43 +65,32 @@ function Exercise() {
         }
 
         // TODO: Оновити дані поточного слова
-        const currentWord =
-            exerciseState.currentSelection[
-                exerciseState.currentVocabularyWordIndex
-            ];
+        const currentWord = exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex];
 
         const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
-            return (
-                checkpoint.checkpoint ===
-                currentWord.metodology_parameters.checkpoint
-            );
+            return checkpoint.checkpoint === currentWord.metodology_parameters.checkpoint_translate_sentence_exercise;
         });
 
-        const currentLastReviewed =
-            currentWord.metodology_parameters.lastReviewed;
+        const currentLastReviewed = currentWord.metodology_parameters.last_reviewed_translate_sentence_exercise;
         const today = new Date().toISOString().split("T")[0];
 
         let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
         if (currentLastReviewed !== today) {
             if (newStatus === "AGAIN" && currentCheckpointIndex !== 0) {
-                nextCheckpoint =
-                    checkpoints[currentCheckpointIndex - 1].checkpoint;
-            } else if (
-                newStatus === "REVIEW" &&
-                checkpoints.length !== currentCheckpointIndex + 1
-            ) {
-                nextCheckpoint =
-                    checkpoints[currentCheckpointIndex + 1].checkpoint;
+                nextCheckpoint = checkpoints[currentCheckpointIndex - 1].checkpoint;
+            } else if (newStatus === "REVIEW" && checkpoints.length !== currentCheckpointIndex + 1) {
+                nextCheckpoint = checkpoints[currentCheckpointIndex + 1].checkpoint;
             }
         }
 
         try {
             await doUpdateVocabularyWord({
                 id: currentWord.id,
+                exerciseType: exerciseState.exerciseType,
                 metodology_parameters: {
-                    status: newStatus,
-                    lastReviewed: new Date().toISOString(),
-                    checkpoint: nextCheckpoint,
+                    status_translate_sentence_exercise: newStatus,
+                    last_reviewed_translate_sentence_exercise: new Date().toISOString(),
+                    checkpoint_translate_sentence_exercise: nextCheckpoint,
                 },
             });
 
@@ -168,31 +139,15 @@ function Exercise() {
     }, [doFetchVocabularyWords]);
 
     useEffect(() => {
-        if (
-            exerciseState.currentSelection.length > 0 &&
-            exerciseState.generateNextStage
-        ) {
+        if (exerciseState.currentSelection.length > 0 && exerciseState.generateNextStage) {
             //console.log(JSON.stringify(data, null, 2));
-            doGenerateExerciseVocabularyItem(
-                exerciseState.currentSelection[
-                    exerciseState.currentVocabularyWordIndex
-                ].main_parameters
-            );
+            doGenerateExerciseVocabularyItem(exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex].main_parameters);
         }
-    }, [
-        doGenerateExerciseVocabularyItem,
-        exerciseState.currentSelection,
-        exerciseState.currentVocabularyWordIndex,
-        exerciseState.generateNextStage,
-    ]);
+    }, [doGenerateExerciseVocabularyItem, exerciseState.currentSelection, exerciseState.currentVocabularyWordIndex, exerciseState.generateNextStage]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
-            if (
-                !event.ctrlKey &&
-                event.code === "Space" &&
-                !uiState.showAddVocabularyWordModal
-            ) {
+            if (!event.ctrlKey && event.code === "Space" && !uiState.showAddVocabularyWordModal) {
                 event.preventDefault();
                 setUiState((prev) => ({
                     ...prev,
@@ -201,21 +156,13 @@ function Exercise() {
                 return;
             }
 
-            if (
-                event.ctrlKey &&
-                event.altKey &&
-                !uiState.showAddVocabularyWordModal
-            ) {
+            if (event.ctrlKey && event.altKey && !uiState.showAddVocabularyWordModal) {
                 event.preventDefault();
                 handleNextButtonClick("AGAIN");
                 return;
             }
 
-            if (
-                event.ctrlKey &&
-                event.code === "Space" &&
-                !uiState.showAddVocabularyWordModal
-            ) {
+            if (event.ctrlKey && event.code === "Space" && !uiState.showAddVocabularyWordModal) {
                 event.preventDefault();
                 handleNextButtonClick("REVIEW");
                 return;
@@ -243,10 +190,7 @@ function Exercise() {
         return parts.map((part, index) => {
             if (part.toLowerCase() === usedForm.toLowerCase()) {
                 return (
-                    <span
-                        key={index}
-                        className="underline decoration-2 decoration-dashed decoration-green-400 underline-offset-5"
-                    >
+                    <span key={index} className="underline decoration-2 decoration-dashed decoration-green-400 underline-offset-5">
                         {part}
                     </span>
                 );
@@ -284,62 +228,47 @@ function Exercise() {
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     {/* text-sm: шрифт на мобільних (14px)
                         sm:text-base: шрифт на планшетах+ (16px) */}
-                    <p className="text-sm sm:text-base text-gray-600">
-                        Завантаження карток...
-                    </p>
+                    <p className="text-sm sm:text-base text-gray-600">Завантаження карток...</p>
                 </div>
             ) : loadingVocabularyWordsError ? (
                 // АДАПТИВНА ПОМИЛКА ЗАВАНТАЖЕННЯ
                 // p-4: мобільні (1rem = 16px паддинг)
                 // sm:p-6: планшети+ (1.5rem = 24px паддинг)
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
-                    <p className="text-red-600 font-medium text-sm sm:text-base">
-                        Упс! Сталася помилка під час завантаження карток :(
-                    </p>
+                    <p className="text-red-600 font-medium text-sm sm:text-base">Упс! Сталася помилка під час завантаження карток :(</p>
                 </div>
             ) : exerciseState.isLoading ? (
                 // АДАПТИВНА СПІНЕР ДЛЯ ОБРОБКИ
                 <div className="text-center py-8 sm:py-12">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                    <p className="text-sm sm:text-base text-gray-600">
-                        Зачекайте, будь ласка ...
-                    </p>
+                    <p className="text-sm sm:text-base text-gray-600">Зачекайте, будь ласка ...</p>
                 </div>
             ) : updateVocabularyWordError ? (
                 // АДАПТИВНА ПОМИЛКА ОНОВЛЕННЯ
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
-                    <p className="text-red-600 font-medium">
-                        Упс! Сталася помилка під час оновлення фрази :(
-                    </p>
+                    <p className="text-red-600 font-medium">Упс! Сталася помилка під час оновлення фрази :(</p>
                 </div>
             ) : generateExerciseVocabularyItemError ? (
                 // АДАПТИВНА ПОМИЛКА ГЕНЕРАЦІЇ
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
-                    <p className="text-red-600 font-medium text-sm sm:text-base">
-                        Упс! Сталася помилка під час генерації вправи :(
-                    </p>
+                    <p className="text-red-600 font-medium text-sm sm:text-base">Упс! Сталася помилка під час генерації вправи :(</p>
                 </div>
-            ) : exerciseState.currentSelection.length > 0 &&
-              exerciseState.exerciseVocabularyItem ? (
+            ) : exerciseState.currentSelection.length > 0 && exerciseState.generatedExerciseData ? (
                 <>
                     {exerciseState.currentSelection.length > 0 && (
                         <div className="mb-4 flex justify-center">
                             <span
                                 className={`px-4 py-1.5 text-sm font-semibold rounded-full border ${
                                     STATUS_MAP[
-                                        exerciseState.currentSelection[
-                                            exerciseState
-                                                .currentVocabularyWordIndex
-                                        ].metodology_parameters.status
+                                        exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex].metodology_parameters
+                                            .status_translate_sentence_exercise
                                     ]?.className
                                 }`}
                             >
                                 {
                                     STATUS_MAP[
-                                        exerciseState.currentSelection[
-                                            exerciseState
-                                                .currentVocabularyWordIndex
-                                        ].metodology_parameters.status
+                                        exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex].metodology_parameters
+                                            .status_translate_sentence_exercise
                                     ]?.label
                                 }
                             </span>
@@ -352,19 +281,14 @@ function Exercise() {
                     <div className="w-full mb-6 sm:mb-8">
                         {/* text-lg: мобільні (1.125rem = 18px)
                             sm:text-xl: планшети+ (1.25rem = 20px) */}
-                        <h2 className="text-xl font-semibold text-gray-700 mb-10">
-                            Перекладіть речення:
-                        </h2>
+                        <h2 className="text-xl font-semibold text-gray-700 mb-10">Перекладіть речення:</h2>
                         {/* p-4: мобільні паддинг
                             sm:p-5: планшети+ паддинг */}
                         <div className="bg-blue-100/80 rounded-xl p-4 sm:p-5 border-l-4 border-blue-400">
                             {/* text-base: мобільні (16px)
                                 sm:text-xl: планшети+ (20px) */}
                             <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide">
-                                {
-                                    exerciseState.exerciseVocabularyItem
-                                        .example_ukr
-                                }
+                                {exerciseState.generatedExerciseData.example_ukr}
                             </p>
                         </div>
                     </div>
@@ -378,12 +302,7 @@ function Exercise() {
                                 sm:gap-1.5: планшет+ зазор (0.375rem) */}
                             <div className="flex flex-row justify-center items-center gap-2 sm:gap-1.5 bg-green-50 border-2 border-green-200 rounded-xl p-3">
                                 <button
-                                    onClick={() =>
-                                        handlePlayAudio(
-                                            exerciseState.exerciseVocabularyItem
-                                                .example_eng
-                                        )
-                                    }
+                                    onClick={() => handlePlayAudio(exerciseState.generatedExerciseData.example_eng)}
                                     disabled={isGeneratingSpeech}
                                     // flex-shrink-0: запобігає стисканню кнопки на мобільних
                                     className="flex items-center justify-center hover:bg-green-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 shrink-0"
@@ -398,10 +317,8 @@ function Exercise() {
                                 {/* break-words: переносить довгі слова на новий рядок на мобільних */}
                                 <p className="text-lg text-gray-800 font-semibold wrap-break-word">
                                     {highlightUsedForm(
-                                        exerciseState.exerciseVocabularyItem
-                                            .example_eng,
-                                        exerciseState.exerciseVocabularyItem
-                                            .used_form
+                                        exerciseState.generatedExerciseData.example_eng,
+                                        exerciseState.generatedExerciseData.used_form
                                     )}
                                 </p>
                             </div>
@@ -441,12 +358,7 @@ function Exercise() {
                             <div className="flex flex-row justify-center items-center gap-2 sm:gap-1.5 bg-violet-50 border-2 border-violet-200 rounded-xl p-2">
                                 <button
                                     onClick={() =>
-                                        handlePlayAudio(
-                                            exerciseState.currentSelection[
-                                                exerciseState
-                                                    .currentVocabularyWordIndex
-                                            ].main_parameters.text
-                                        )
+                                        handlePlayAudio(exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex].main_parameters.text)
                                     }
                                     disabled={isGeneratingSpeech}
                                     className="flex items-center justify-center hover:bg-violet-100 rounded-lg p-2 transition-colors duration-200 cursor-pointer disabled:opacity-50 shrink-0"
@@ -459,12 +371,7 @@ function Exercise() {
                                     )}
                                 </button>
                                 <p className="text-lg text-gray-800 font-semibold wrap-break-word">
-                                    {
-                                        exerciseState.currentSelection[
-                                            exerciseState
-                                                .currentVocabularyWordIndex
-                                        ].main_parameters.text
-                                    }
+                                    {exerciseState.currentSelection[exerciseState.currentVocabularyWordIndex].main_parameters.text}
                                 </p>
                             </div>
                         </div>
@@ -490,23 +397,19 @@ function Exercise() {
             ) : data.length === 0 ? (
                 // АДАПТИВНА ПОРОЖНЯ ПОСЛІДОВНІСТЬ - НЕМАЄ СЛІВ
                 <div className="text-center py-8 sm:py-12">
-                    <p className="text-sm sm:text-base text-gray-500">
-                        Немає слів для вивчення :(
-                    </p>
+                    <p className="text-sm sm:text-base text-gray-500">Немає слів для вивчення :(</p>
                 </div>
             ) : (
                 // АДАПТИВНА ПОСЛІДОВНІСТЬ - ЗАВЕРШЕНО
                 <div className="text-center py-8 sm:py-12">
-                    <p className="text-sm sm:text-base text-gray-500">
-                        Ви вивчили обов'язковий мінімум на сьогодні :)
-                    </p>
+                    <p className="text-sm sm:text-base text-gray-500">Ви вивчили обов'язковий мінімум на сьогодні :)</p>
                 </div>
             )}
         </div>
     );
 
     return (
-        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-6 lg:p-12 pt-12 lg:pt-16 pb-10 mx-5 sm:mx-auto">
+        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-6 lg:p-12 pt-12 lg:pt-16 pb-10 mx-5 sm:m-auto">
             {content}
 
             {/* АДАПТИВНИЙ КОНТЕЙНЕР ДЛЯ КНОПОК */}
@@ -529,12 +432,7 @@ function Exercise() {
                     sm:w-auto: природна ширина на планшетах+ */}
                 <button
                     onClick={() => handleNextButtonClick("AGAIN")}
-                    hidden={
-                        data.length <= 0 ||
-                        isLoadingVocabularyWords ||
-                        exerciseState.isLoading ||
-                        exerciseState.currentSelection.length <= 0
-                    }
+                    hidden={data.length <= 0 || isLoadingVocabularyWords || exerciseState.isLoading || exerciseState.currentSelection.length <= 0}
                     className={`px-6 sm:px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 order-1 sm:order-0 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Повторити
@@ -543,12 +441,7 @@ function Exercise() {
                 {/* Аналогічні адаптивні класи як для кнопки "Повторити" */}
                 <button
                     onClick={() => handleNextButtonClick("REVIEW")}
-                    hidden={
-                        data.length <= 0 ||
-                        isLoadingVocabularyWords ||
-                        exerciseState.isLoading ||
-                        exerciseState.currentSelection.length <= 0
-                    }
+                    hidden={data.length <= 0 || isLoadingVocabularyWords || exerciseState.isLoading || exerciseState.currentSelection.length <= 0}
                     className={`px-6 sm:px-22.5 py-3.5 rounded-xl font-semibold text-lg transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full sm:w-auto`}
                 >
                     Добре
@@ -564,6 +457,6 @@ function Exercise() {
             />
         </div>
     );
-}
+};
 
-export default Exercise;
+export { TranslateSentenceExercise };
