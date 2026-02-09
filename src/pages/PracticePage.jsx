@@ -7,7 +7,13 @@ import {
     ListenAndFillTheGapExercise,
 } from "../components/exercises/index.js";
 
-import { ChevronRight, Target, Headphones, Type, Languages } from "lucide-react";
+import {
+    ChevronRight,
+    Target,
+    Headphones,
+    Type,
+    Languages,
+} from "lucide-react";
 import { updateExerciseState } from "../store/index.js";
 
 const PracticePage = () => {
@@ -24,7 +30,7 @@ const PracticePage = () => {
     const ExerciseType = {
         TranslateSentenceExercise: "translate_sentence_exercise",
         FillTheGapExercise: "fill_the_gap_exercise",
-        ListenAndFillTheGapExercise: "listen_and_fill_exercise",
+        ListenAndFillTheGapExercise: "listen_and_fill_the_gap_exercise",
     };
 
     const coreExercisesData = [
@@ -50,7 +56,11 @@ const PracticePage = () => {
             difficulty: "Нормально",
             difficultyColor: "text-blue-600",
             difficultyBg: "bg-blue-600",
-            features: ["Граматичний контекст", "Розуміння структури", "Швидке мислення"],
+            features: [
+                "Граматичний контекст",
+                "Розуміння структури",
+                "Швидке мислення",
+            ],
         },
         {
             id: "listen-and-fill-exercise",
@@ -72,7 +82,9 @@ const PracticePage = () => {
         exercise = <TranslateSentenceExercise />;
     } else if (exerciseState.exerciseType === ExerciseType.FillTheGapExercise) {
         exercise = <FillTheGapExercise />;
-    } else if (exerciseState.exerciseType === ExerciseType.ListenAndFillTheGapExercise) {
+    } else if (
+        exerciseState.exerciseType === ExerciseType.ListenAndFillTheGapExercise
+    ) {
         exercise = <ListenAndFillTheGapExercise />;
     }
 
@@ -103,8 +115,13 @@ const PracticePage = () => {
                             <Target className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900">Практика ⚡</h1>
-                            <p className="text-gray-600">Покращуйте свої навички за допомогою інтерактивних вправ</p>
+                            <h1 className="text-xl font-bold text-gray-900">
+                                Практика ⚡
+                            </h1>
+                            <p className="text-gray-600">
+                                Покращуйте свої навички за допомогою
+                                інтерактивних вправ
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -126,7 +143,11 @@ const PracticePage = () => {
                                     return (
                                         <div
                                             key={exercise.id}
-                                            onClick={() => handleExerciseButtonClick(exercise.type)}
+                                            onClick={() =>
+                                                handleExerciseButtonClick(
+                                                    exercise.type
+                                                )
+                                            }
                                             className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
                                         >
                                             <div>
@@ -147,12 +168,16 @@ const PracticePage = () => {
                                                     <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                                                 </div>
 
-                                                <p className="text-gray-600 mb-6">{exercise.description}</p>
+                                                <p className="text-gray-600 mb-6">
+                                                    {exercise.description}
+                                                </p>
                                             </div>
 
                                             <div className="relative">
                                                 <div className="flex items-center space-x-4 mb-6 text-sm">
-                                                    <div className={`flex items-center ${exercise.difficultyColor}`}>
+                                                    <div
+                                                        className={`flex items-center ${exercise.difficultyColor}`}
+                                                    >
                                                         <span
                                                             className={`w-2 h-2 ${exercise.difficultyBg} rounded-full mr-2`}
                                                         />
@@ -161,15 +186,17 @@ const PracticePage = () => {
                                                 </div>
 
                                                 <div className="space-y-2 mb-2">
-                                                    {exercise.features.map((feature, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="flex items-center text-sm text-gray-600"
-                                                        >
-                                                            <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3" />
-                                                            {feature}
-                                                        </div>
-                                                    ))}
+                                                    {exercise.features.map(
+                                                        (feature, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex items-center text-sm text-gray-600"
+                                                            >
+                                                                <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3" />
+                                                                {feature}
+                                                            </div>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

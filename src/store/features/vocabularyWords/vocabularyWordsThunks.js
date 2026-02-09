@@ -10,52 +10,91 @@ const client = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-const addVocabularyWord = createAsyncThunk("vocabularyWords/add", async (newWord) => {
-    const { data, error } = await supabase
-        .from("vocabulary_words")
-        .insert([
-            {
-                text: newWord.text,
-                topic: newWord.topic || null,
-                relevant_translations: newWord.relevant_translations || null,
-            },
-        ])
-        .select();
+export const TEXT_TYPES = [
+    "documentary",
+    "story",
+    "news",
+    "article",
+    "blog",
+    "scientific",
+    "announcement",
+    "advertisement",
+    "instruction",
+    "review on product / video / post etc",
+    "letter",
+    "documentation",
+    "speech",
+    "comment",
+    "social media post",
+];
 
-    if (error) {
-        throw new Error(error.message);
+export const getRandomSentenceType = () => {
+    const randomIndex = Math.floor(Math.random() * TEXT_TYPES.length);
+    return TEXT_TYPES[randomIndex];
+};
+
+const addVocabularyWord = createAsyncThunk(
+    "vocabularyWords/add",
+    async (newWord) => {
+        const { data, error } = await supabase
+            .from("vocabulary_words")
+            .insert([
+                {
+                    text: newWord.text,
+                    topic: newWord.topic || null,
+                    relevant_translations:
+                        newWord.relevant_translations || null,
+                },
+            ])
+            .select();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data[0];
     }
+);
 
-    return data[0];
-});
+const fetchVocabularyWords = createAsyncThunk(
+    "vocabularyWords/fetch",
+    async () => {
+        const { data: vocabulary_words, error } = await supabase
+            .from("vocabulary_words")
+            .select("*")
+            .order("id", { ascending: true });
 
-const fetchVocabularyWords = createAsyncThunk("vocabularyWords/fetch", async () => {
-    const { data: vocabulary_words, error } = await supabase.from("vocabulary_words").select("*").order("id", { ascending: true });
+        if (error) {
+            throw new Error(error.message);
+        }
 
-    if (error) {
-        throw new Error(error.message);
+        return vocabulary_words;
     }
+);
 
-    return vocabulary_words;
-});
+const updateVocabularyWord = createAsyncThunk(
+    "vocabularyWords/update",
+    async ({ id, exerciseType, metodology_parameters }) => {
+        const { data, error } = await supabase
+            .from("vocabulary_words")
+            .update({
+                [`status_${exerciseType}`]:
+                    metodology_parameters[`status_${exerciseType}`],
+                [`last_reviewed_${exerciseType}`]:
+                    metodology_parameters[`last_reviewed_${exerciseType}`],
+                [`checkpoint_${exerciseType}`]:
+                    metodology_parameters[`checkpoint_${exerciseType}`],
+            })
+            .eq("id", id)
+            .select();
 
-const updateVocabularyWord = createAsyncThunk("vocabularyWords/update", async ({ id, exerciseType, metodology_parameters }) => {
-    const { data, error } = await supabase
-        .from("vocabulary_words")
-        .update({
-            [`status_${exerciseType}`]: metodology_parameters[`status_${exerciseType}`],
-            [`last_reviewed_${exerciseType}`]: metodology_parameters[`last_reviewed_${exerciseType}`],
-            [`checkpoint_${exerciseType}`]: metodology_parameters[`checkpoint_${exerciseType}`],
-        })
-        .eq("id", id)
-        .select();
+        if (error) {
+            throw new Error(error.message);
+        }
 
-    if (error) {
-        throw new Error(error.message);
+        return data;
     }
-
-    return data;
-});
+);
 
 const GPTModel = {
     GPT4oMini: "gpt-4o-mini",
@@ -65,8 +104,10 @@ const GPTModel = {
 
 Object.freeze(GPTModel);
 
-const generateExerciseVocabularyItem = createAsyncThunk("vocabularyWords/generateExerciseVocabularyItem", async (vocabularyWordMainParameters) => {
-    const input = `Generate a JSON object for an English word/phrase/pattern.
+const generateExerciseVocabularyItem = createAsyncThunk(
+    "vocabularyWords/generateExerciseVocabularyItem",
+    async (vocabularyWordMainParameters) => {
+        const input = `Generate a JSON object for an English word/phrase/pattern.
 
 INPUT:
 - Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
@@ -113,25 +154,26 @@ OUTPUT:
     "used_form": "on July 5th"
 }`;
 
-    const response = await client.responses.create({
-        //model: "gpt-4o-mini", // швидкий // погана граматика
-        //model: "gpt-4.1-mini", // трішки краща граматика
-        model: GPTModel.GPT41Mini, // довго, але краща граматика
+        const response = await client.responses.create({
+            //model: "gpt-4o-mini", // швидкий // погана граматика
+            //model: "gpt-4.1-mini", // трішки краща граматика
+            model: GPTModel.GPT41Mini, // довго, але краща граматика
 
-        //reasoning: { effort: "low" },
-        temperature: 0.6,
-        input,
-    });
+            //reasoning: { effort: "low" },
+            temperature: 0.6,
+            input,
+        });
 
-    let parsed;
-    try {
-        parsed = JSON.parse(response.output_text);
-        console.log(response.usage);
-    } catch (e) {
-        throw new Error("OpenAI returned invalid JSON");
+        let parsed;
+        try {
+            parsed = JSON.parse(response.output_text);
+            console.log(response.usage);
+        } catch (e) {
+            throw new Error("OpenAI returned invalid JSON");
+        }
+        return parsed;
     }
-    return parsed;
-});
+);
 
 const TTSVoice = {
     Alloy: "alloy",
@@ -150,80 +192,104 @@ const TTSVoice = {
 
 Object.freeze(TTSVoice);
 
-const generateSpeech = createAsyncThunk("vocabularyWords/generateSpeech", async (text) => {
-    const response = await client.audio.speech.create({
-        model: "gpt-4o-mini-tts",
-        voice: TTSVoice.Marin,
-        input: text,
-    });
+const generateSpeech = createAsyncThunk(
+    "vocabularyWords/generateSpeech",
+    async (text) => {
+        const response = await client.audio.speech.create({
+            model: "gpt-4o-mini-tts",
+            voice: TTSVoice.Marin,
+            input: text,
+        });
 
-    const arrayBuffer = await response.arrayBuffer();
-    const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-    const url = URL.createObjectURL(blob);
+        const arrayBuffer = await response.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+        const url = URL.createObjectURL(blob);
 
-    return url;
-});
-
-const generateSentenceCompletion = createAsyncThunk("vocabularyWords/generateSentenceCompletion", async (vocabularyWordMainParameters) => {
-    const input = `Generate a sentence completion exercise for an English word/phrase/pattern.
-
-INPUT:
-- Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
-${vocabularyWordMainParameters.topic ? `- Topic: "${vocabularyWordMainParameters.topic}"` : ""}
-${vocabularyWordMainParameters.relevant_translations ? `- Relevant translations: ${vocabularyWordMainParameters.relevant_translations}` : ""}
-
-OUTPUT STRUCTURE:
-{
-    "audioSentence": "Complete English sentence with the word/phrase",
-    "displaySentence": "Same sentence with ____ instead of the word/phrase",
-    "sentenceTranslation": "Ukrainian translation of the complete sentence",
-    "correctAnswer": "the exact word/phrase that was removed",
-    "options": ["correctAnswer", "distractor1", "distractor2", "distractor3"],
-    "hint": "optional hint in Ukrainian (only if needed)"
-}
-
-REQUIREMENTS:
-1. Create a sentence for BEGINNER level (A1-A2) English learners
-2. The sentence must sound natural and native-like
-3. Generate 3 plausible distractors (wrong answers) that are similar in meaning or form
-4. Shuffle the options array so correct answer is not always first
-5. The displaySentence should have exactly one ____ where the word was removed
-6. Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance
-7. Return ONLY valid JSON, no markdown, no explanations
-
-EXAMPLE:
-
-INPUT:
-- Word/phrase/pattern: "pay for"
-
-OUTPUT:
-{
-    "audioSentence": "I will pay for the apartment tomorrow",
-    "displaySentence": "I will ____ the apartment tomorrow",
-    "sentenceTranslation": "Я заплачу за квартиру завтра",
-    "correctAnswer": "pay for",
-    "options": ["pay for", "pay to", "pay at", "pay with"],
-    "hint": null
-}`;
-
-    const response = await client.responses.create({
-        model: GPTModel.GPT41Mini,
-        temperature: 0.7,
-        input,
-    });
-
-    let parsed;
-    try {
-        parsed = JSON.parse(response.output_text);
-        console.log("Sentence completion generated:", response.usage);
-    } catch (e) {
-        throw new Error("OpenAI returned invalid JSON");
+        return url;
     }
-    return parsed;
-});
+);
 
-const generateListenAndFill = createAsyncThunk("vocabularyWords/generateListenAndFill", async (vocabularyWordMainParameters) => {
-    const input = `Generate a listening comprehension exercise for an English word/phrase/pattern.
+const generateSentenceCompletion = createAsyncThunk(
+    "vocabularyWords/generateSentenceCompletion",
+    async (vocabularyWordMainParameters) => {
+        const selectedSentenceType = getRandomSentenceType();
+        const input = `Create a sentence completion exercise for word/phrase/pattern.
+
+INPUT:
+- Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
+${vocabularyWordMainParameters.topic ? `- Topic: "${vocabularyWordMainParameters.topic}"` : ""}
+${vocabularyWordMainParameters.relevant_translations ? `- Relevant translations: ${vocabularyWordMainParameters.relevant_translations}` : ""}
+
+IMPORTANT: Create a detailed text that sounds like it comes from a ${selectedSentenceType}.
+
+Return a JSON object with this exact structure:
+{
+  "displaySentence": "Same sentence with ____ (gap) instead of the word/phrase/pattern",
+  "completeSentence": "Complete English sentence with the word/phrase/pattern",
+  "sentenceTranslation": "Ukrainian translation of the complete sentence",
+  "correctAnswer": "the exact word/phrase/pattern that was removed and used in completeSentence",
+  "hint": "clear and short explanation"
+}
+
+Requirements:
+- Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
+- displaySentence property: Use "____" (four underscores) as placeholder
+- correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
+- hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
+- As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
+- Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
+
+Example for word "clear" in "weather forecast" style:
+
+{
+  "displaySentence": "Tomorrow the sky will be ____ throughout the day, with no clouds expected. Temperatures will rise steadily in the afternoon, bringing warm and pleasant weather.",
+  "completeSentence": "Tomorrow the sky will be clear throughout the day, with no clouds expected. Temperatures will rise steadily in the afternoon, bringing warm and pleasant weather.",
+  "sentenceTranslation": "Завтра небо буде ясним протягом усього дня, без очікуваних хмар. Температура поступово підвищуватиметься вдень, приносячи теплу та приємну погоду.",
+  "correctAnswer": "clear",
+  "hint": "Typical word in forecasts when the sky has no clouds at all."
+}
+
+Example for word "hungry" in "story" style:
+
+{
+  "displaySentence": "After walking all afternoon in the forest, the children were so ____ that they could hardly wait for dinner.",
+  "completeSentence": "After walking all afternoon in the forest, the children were so hungry that they could hardly wait for dinner.",
+  "sentenceTranslation": "Після прогулянки лісом увесь день діти були такими голодними, що ледве дочекалися вечері.",
+  "correctAnswer": "hungry",
+  "hint": "A feeling when your body needs food."
+}
+
+Bad example:
+
+{
+  "displaySentence": "If you feel angry, try not to ____ your temper and stay calm.",
+  "completeSentence": "If you feel angry, try not to lose your temper and stay calm.",
+  "sentenceTranslation": "Якщо ти відчуваєш голод, намагайся не втрачати здоровий глузд та залишатися спокійним",
+  "correctAnswer": "lose your temper",
+  "hint": "When you get very angry and cannot control your feelings."
+} Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm."`;
+
+        const response = await client.responses.create({
+            model: GPTModel.GPT41Mini,
+            temperature: 0.7,
+            input,
+        });
+
+        let parsed;
+        try {
+            parsed = JSON.parse(response.output_text);
+            console.log("Sentence completion generated:", response.usage);
+        } catch (e) {
+            throw new Error("OpenAI returned invalid JSON");
+        }
+        return parsed;
+    }
+);
+
+const generateListenAndFill = createAsyncThunk(
+    "vocabularyWords/generateListenAndFill",
+    async (vocabularyWordMainParameters) => {
+        const input = `Generate a listening comprehension exercise for an English word/phrase/pattern.
 
 INPUT:
 - Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
@@ -232,17 +298,17 @@ ${vocabularyWordMainParameters.relevant_translations ? `- Relevant translations:
 
 OUTPUT STRUCTURE:
 {
-    "audioSentence": "Complete English sentence with the word/phrase",
+    "audioSentence": "Complete English sentence with the word/phrase/pattern",
     "displaySentence": "Same sentence with ____ instead of the word/phrase",
     "sentenceTranslation": "Ukrainian translation of the complete sentence",
-    "correctForm": "the exact word/phrase/form that was used in the sentence",
-    "hint": "optional hint in Ukrainian (only if needed)"
+    "correctForm": "the exact word/phrase/pattern that was used in the sentence",
+    "hint": "hint"
 }
 
 REQUIREMENTS:
 1. Create a sentence for BEGINNER level (A1-A2) English learners
 2. The sentence must sound natural and native-like
-3. The displaySentence should have exactly one ____ where the word was removed
+3. The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 4. The correctForm should be the EXACT form used in the sentence (not the base form)
    - For example, if sentence uses "paid", correctForm should be "paid" not "pay"
    - If sentence uses "running", correctForm should be "running" not "run"
@@ -278,21 +344,22 @@ OUTPUT:
     "hint": null
 }`;
 
-    const response = await client.responses.create({
-        model: GPTModel.GPT41Mini,
-        temperature: 0.7,
-        input,
-    });
+        const response = await client.responses.create({
+            model: GPTModel.GPT41Mini,
+            temperature: 0.7,
+            input,
+        });
 
-    let parsed;
-    try {
-        parsed = JSON.parse(response.output_text);
-        console.log("Listen and fill generated:", response.usage);
-    } catch (e) {
-        throw new Error("OpenAI returned invalid JSON");
+        let parsed;
+        try {
+            parsed = JSON.parse(response.output_text);
+            console.log("Listen and fill generated:", response.usage);
+        } catch (e) {
+            throw new Error("OpenAI returned invalid JSON");
+        }
+        return parsed;
     }
-    return parsed;
-});
+);
 
 export {
     addVocabularyWord,

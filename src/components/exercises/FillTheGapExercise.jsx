@@ -5,6 +5,8 @@ import {
     fetchVocabularyWords,
     generateSentenceCompletion,
     generateSpeech,
+    updateExerciseState,
+    updateVocabularyWord,
 } from "../../store";
 import { Loader, CheckCircle, XCircle, Volume2 } from "lucide-react";
 
@@ -16,6 +18,12 @@ const FillTheGapExercise = () => {
         isLoadingVocabularyWords,
         loadingVocabularyWordsError,
     ] = useThunk(fetchVocabularyWords);
+
+    const [
+        doUpdateVocabularyWord,
+        isUpdatingVocabularyWord,
+        updateVocabularyWordError,
+    ] = useThunk(updateVocabularyWord);
 
     const [
         doGenerateSentenceCompletion,
@@ -41,6 +49,53 @@ const FillTheGapExercise = () => {
     const isLoading = isLoadingVocabularyWords || isGenerating;
     const combinedProcessing = isGenerating;
 
+    const loadExercise = async (vocabularyWordMainParameters) => {
+        try {
+            setSelectedAnswer(null);
+            setShowResult(false);
+            setIsCorrect(false);
+
+            const result = await doGenerateSentenceCompletion(
+                vocabularyWordMainParameters
+            );
+
+            setSentenceData(result);
+            setCorrectAnswer(result.correctAnswer);
+
+            // 1. Визначаємо регістр correctAnswer
+            const isUpperCase =
+                result.correctAnswer === result.correctAnswer.toUpperCase();
+
+            // 2. Беремо елементи з data, виключаючи correctAnswer
+            const words = data
+                .map((item) => item.main_parameters.text)
+                .filter((text) => text !== result.correctAnswer);
+
+            // 3. Рандомно перемішуємо та беремо 3
+            const randomWords = words
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3);
+
+            // 4. Формуємо options
+            let options = [result.correctAnswer, ...randomWords];
+
+            // 5. Приводимо до одного регістру
+            options = options.map((word) =>
+                isUpperCase ? word.toUpperCase() : word.toLowerCase()
+            );
+
+            // 6. Перемішуємо options (Fisher–Yates)
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            setAnswerOptions(options);
+        } catch (error) {
+            console.error("Помилка генерації вправи:", error);
+        }
+    };
+
     // Генерація вправи при зміні поточного слова
     useEffect(() => {
         if (
@@ -64,24 +119,6 @@ const FillTheGapExercise = () => {
         doFetchVocabularyWords();
     }, [doFetchVocabularyWords]);
 
-    const loadExercise = async (vocabularyWordMainParameters) => {
-        try {
-            setSelectedAnswer(null);
-            setShowResult(false);
-            setIsCorrect(false);
-
-            const result = await doGenerateSentenceCompletion(
-                vocabularyWordMainParameters
-            );
-
-            setSentenceData(result);
-            setCorrectAnswer(result.correctAnswer);
-            setAnswerOptions(result.options);
-        } catch (error) {
-            console.error("Помилка генерації вправи:", error);
-        }
-    };
-
     const handleAnswerSelect = (option) => {
         if (selectedAnswer !== null) return;
 
@@ -89,31 +126,74 @@ const FillTheGapExercise = () => {
         const correct = option.toLowerCase() === correctAnswer.toLowerCase();
         setIsCorrect(correct);
         setShowResult(true);
+    };
 
-        // Якщо немає перекладу, генеруємо його
-        if (!sentenceData.sentenceTranslation) {
-            setIsTranslating(true);
-            try {
-                // Тут можна додати генерацію перекладу через OpenAI
-                // Поки залишаємо пустим
-            } catch (error) {
-                console.error("Помилка генерації перекладу:", error);
-            } finally {
-                setIsTranslating(false);
+    const updateCurrentSelectionItem = async () => {
+        const currentWord =
+            exerciseState.currentSelection[
+                exerciseState.currentVocabularyWordIndex
+            ];
+
+        const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
+            return (
+                checkpoint.checkpoint ===
+                currentWord.metodology_parameters
+                    .checkpoint_fill_the_gap_exercise
+            );
+        });
+
+        const currentLastReviewed =
+            currentWord.metodology_parameters
+                .last_reviewed_fill_the_gap_exercise;
+        const today = new Date().toISOString().split("T")[0];
+
+        let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
+        if (currentLastReviewed !== today) {
+            if (!isCorrect && currentCheckpointIndex !== 0) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex - 1].checkpoint;
+            } else if (
+                isCorrect &&
+                checkpoints.length !== currentCheckpointIndex + 1
+            ) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex + 1].checkpoint;
             }
+        }
+
+        try {
+            await doUpdateVocabularyWord({
+                id: currentWord.id,
+                exerciseType: exerciseState.exerciseType,
+                metodology_parameters: {
+                    status_fill_the_gap_exercise: isCorrect
+                        ? "REVIEW"
+                        : "AGAIN",
+                    last_reviewed_fill_the_gap_exercise:
+                        new Date().toISOString(),
+                    checkpoint_fill_the_gap_exercise: nextCheckpoint,
+                },
+            });
+        } catch (error) {
+            console.error("Помилка оновлення:", error);
         }
     };
 
     const handleNextClick = async () => {
-        // Переходимо до наступного слова без оновлення статусу
-        const nextIndex = getNextVocabularyItemIndex();
-        dispatch({
-            type: "vocabularyWords/updateExerciseState",
-            payload: {
-                currentVocabularyWordIndex: nextIndex,
+        if (exerciseState.currentSelection.length === 0) {
+            console.log("Немає слів для проходження");
+            return;
+        }
+
+        await updateCurrentSelectionItem();
+
+        const nextVocabularyItemIndex = getNextVocabularyItemIndex();
+        dispatch(
+            updateExerciseState({
+                currentVocabularyWordIndex: nextVocabularyItemIndex,
                 generateNextStage: true,
-            },
-        });
+            })
+        );
     };
 
     const getNextVocabularyItemIndex = () => {
@@ -125,16 +205,6 @@ const FillTheGapExercise = () => {
             return 0;
         } else {
             return exerciseState.currentVocabularyWordIndex + 1;
-        }
-    };
-
-    const handlePlayAudio = async (text) => {
-        try {
-            const audioUrl = await doGenerateSpeech(text);
-            const audio = new Audio(audioUrl);
-            audio.play();
-        } catch (error) {
-            console.error("Помилка відтворення аудіо:", error);
         }
     };
 
@@ -158,8 +228,8 @@ const FillTheGapExercise = () => {
                         <div className="bg-green-100/80 rounded-xl p-6 border-l-4 border-emerald-400">
                             <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide mb-3">
                                 {showResult
-                                    ? sentenceData?.audioSentence
-                                        ? sentenceData.audioSentence
+                                    ? sentenceData?.completeSentence
+                                        ? sentenceData.completeSentence
                                               .split(
                                                   new RegExp(
                                                       `(\\b${correctAnswer}\\b)`,
@@ -286,7 +356,7 @@ const FillTheGapExercise = () => {
 
                     {/* Next Button */}
                     {showResult && (
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-4">
                             <button
                                 onClick={handleNextClick}
                                 className="px-8 py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-semibold shadow-md hover:shadow-lg hover:scale-102 cursor-pointer"

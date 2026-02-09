@@ -38,7 +38,6 @@ const ListenAndFillTheGapExercise = () => {
     // Audio state
     const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
 
-    const audioRef = useRef(null);
     const inputRef = useRef(null);
 
     const isLoading = isLoadingVocabularyWords || isGenerating;
@@ -67,13 +66,6 @@ const ListenAndFillTheGapExercise = () => {
         exerciseState.generateNextStage,
     ]);
 
-    // Focus input when ready
-    useEffect(() => {
-        if (!isLoading && inputRef.current && !combinedProcessing) {
-            inputRef.current.focus();
-        }
-    }, [isLoading, combinedProcessing]);
-
     const loadExercise = async (vocabularyWordMainParameters) => {
         try {
             // Reset state
@@ -83,15 +75,10 @@ const ListenAndFillTheGapExercise = () => {
             setShowResult(false);
             setExerciseData(null);
 
-            console.log(
-                `Generating listen-and-fill for: "${vocabularyWordMainParameters.text}"`
-            );
-
             const result = await doGenerateListenAndFill(
                 vocabularyWordMainParameters
             );
 
-            console.log("TranslateSentenceExercise data received:", result);
             setExerciseData(result);
         } catch (error) {
             console.error("Помилка генерації вправи:", error);
