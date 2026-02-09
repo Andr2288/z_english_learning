@@ -227,13 +227,13 @@ Return a JSON object with this exact structure:
   "displaySentence": "Same sentence with ____ (gap) instead of the word/phrase/pattern",
   "completeSentence": "Complete English sentence with the word/phrase/pattern",
   "sentenceTranslation": "Ukrainian translation of the complete sentence",
-  "correctAnswer": "the exact word/phrase/pattern that was removed and used in completeSentence",
+  "correctAnswer": "the exact form of word/phrase/pattern you used in "completeSentence" because after parsing I want to underline used form on the client side",
   "hint": "clear and short explanation"
 }
 
 Requirements:
 - Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
-- displaySentence property: Use "____" (four underscores) as placeholder
+- The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
 - As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
@@ -289,60 +289,62 @@ Bad example:
 const generateListenAndFill = createAsyncThunk(
     "vocabularyWords/generateListenAndFill",
     async (vocabularyWordMainParameters) => {
-        const input = `Generate a listening comprehension exercise for an English word/phrase/pattern.
+        const selectedSentenceType = getRandomSentenceType();
+        const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
 - Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
 ${vocabularyWordMainParameters.topic ? `- Topic: "${vocabularyWordMainParameters.topic}"` : ""}
 ${vocabularyWordMainParameters.relevant_translations ? `- Relevant translations: ${vocabularyWordMainParameters.relevant_translations}` : ""}
 
-OUTPUT STRUCTURE:
+IMPORTANT: Create a detailed text that sounds like it comes from a ${selectedSentenceType}.
+
+Return a JSON object with this exact structure:
 {
-    "audioSentence": "Complete English sentence with the word/phrase/pattern",
-    "displaySentence": "Same sentence with ____ instead of the word/phrase",
-    "sentenceTranslation": "Ukrainian translation of the complete sentence",
-    "correctForm": "the exact word/phrase/pattern that was used in the sentence",
-    "hint": "hint"
+  "displaySentence": "Same sentence with ____ (gap) instead of the word/phrase/pattern",
+  "completeSentence": "Complete English sentence with the word/phrase/pattern",
+  "sentenceTranslation": "Ukrainian translation of the complete sentence",
+  "correctAnswer": "the exact form of word/phrase/pattern you used in "completeSentence" because after parsing I want to underline used form on the client side",
+  "hint": "clear and short explanation"
 }
 
-REQUIREMENTS:
-1. Create a sentence for BEGINNER level (A1-A2) English learners
-2. The sentence must sound natural and native-like
-3. The displaySentence should have exactly one ____ where the word (or several words) was / were removed
-4. The correctForm should be the EXACT form used in the sentence (not the base form)
-   - For example, if sentence uses "paid", correctForm should be "paid" not "pay"
-   - If sentence uses "running", correctForm should be "running" not "run"
-5. The sentence should be clear when heard (avoid ambiguous words that sound like others)
-6. Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance
-7. Return ONLY valid JSON, no markdown, no explanations
+Requirements:
+- Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
+- The displaySentence should have exactly one ____ where the word (or several words) was / were removed
+- correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
+- hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
+- As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
+- Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
 
-EXAMPLE 1:
+Example for word "clear" in "weather forecast" style:
 
-INPUT:
-- Word/phrase/pattern: "pay for"
-
-OUTPUT:
 {
-    "audioSentence": "I will pay for the apartment tomorrow",
-    "displaySentence": "I will ____ the apartment tomorrow",
-    "sentenceTranslation": "Я заплачу за квартиру завтра",
-    "correctForm": "pay for",
-    "hint": null
+  "displaySentence": "Tomorrow the sky will be ____ throughout the day, with no clouds expected. Temperatures will rise steadily in the afternoon, bringing warm and pleasant weather.",
+  "completeSentence": "Tomorrow the sky will be clear throughout the day, with no clouds expected. Temperatures will rise steadily in the afternoon, bringing warm and pleasant weather.",
+  "sentenceTranslation": "Завтра небо буде ясним протягом усього дня, без очікуваних хмар. Температура поступово підвищуватиметься вдень, приносячи теплу та приємну погоду.",
+  "correctAnswer": "clear",
+  "hint": "Typical word in forecasts when the sky has no clouds at all."
 }
 
-EXAMPLE 2:
+Example for word "hungry" in "story" style:
 
-INPUT:
-- Word/phrase/pattern: "run"
-
-OUTPUT:
 {
-    "audioSentence": "She runs every morning in the park",
-    "displaySentence": "She ____ every morning in the park",
-    "sentenceTranslation": "Вона бігає кожного ранку в парку",
-    "correctForm": "runs",
-    "hint": null
-}`;
+  "displaySentence": "After walking all afternoon in the forest, the children were so ____ that they could hardly wait for dinner.",
+  "completeSentence": "After walking all afternoon in the forest, the children were so hungry that they could hardly wait for dinner.",
+  "sentenceTranslation": "Після прогулянки лісом увесь день діти були такими голодними, що ледве дочекалися вечері.",
+  "correctAnswer": "hungry",
+  "hint": "A feeling when your body needs food."
+}
+
+Bad example:
+
+{
+  "displaySentence": "If you feel angry, try not to ____ your temper and stay calm.",
+  "completeSentence": "If you feel angry, try not to lose your temper and stay calm.",
+  "sentenceTranslation": "Якщо ти відчуваєш голод, намагайся не втрачати здоровий глузд та залишатися спокійним",
+  "correctAnswer": "lose your temper",
+  "hint": "When you get very angry and cannot control your feelings."
+} Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm."`;
 
         const response = await client.responses.create({
             model: GPTModel.GPT41Mini,

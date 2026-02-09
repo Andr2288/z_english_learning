@@ -5,6 +5,7 @@ import {
     fetchVocabularyWords,
     generateListenAndFill,
     generateSpeech,
+    updateVocabularyWord,
 } from "../../store";
 import { Loader, CheckCircle, XCircle, Volume2 } from "lucide-react";
 
@@ -17,13 +18,19 @@ const ListenAndFillTheGapExercise = () => {
         loadingVocabularyWordsError,
     ] = useThunk(fetchVocabularyWords);
 
+    const [
+        doUpdateVocabularyWord,
+        isUpdatingVocabularyWord,
+        updateVocabularyWordError,
+    ] = useThunk(updateVocabularyWord);
+
     const [doGenerateListenAndFill, isGenerating, generateListenAndFillError] =
         useThunk(generateListenAndFill);
 
     const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
         useThunk(generateSpeech);
 
-    const { data, exerciseState } = useSelector((state) => {
+    const { data, exerciseState, checkpoints } = useSelector((state) => {
         return state.vocabularyWords;
     });
 
@@ -98,7 +105,7 @@ const ListenAndFillTheGapExercise = () => {
         }
     };
 
-    const checkAnswer = (answer, correctForm, originalWord) => {
+    const checkAnswer = (answer, correctAnswer, originalWord) => {
         const normalizeText = (text) => {
             return text
                 .toLowerCase()
@@ -107,7 +114,7 @@ const ListenAndFillTheGapExercise = () => {
         };
 
         const normalizedAnswer = normalizeText(answer);
-        const normalizedCorrect = normalizeText(correctForm);
+        const normalizedCorrect = normalizeText(correctAnswer);
         const normalizedOriginal = normalizeText(originalWord);
 
         // Check exact match with correct form
@@ -146,7 +153,7 @@ const ListenAndFillTheGapExercise = () => {
 
         const correct = checkAnswer(
             userAnswer,
-            exerciseData.correctForm,
+            exerciseData.correctAnswer,
             currentWord.main_parameters.text
         );
 
@@ -161,8 +168,66 @@ const ListenAndFillTheGapExercise = () => {
         }
     };
 
-    const handleNextClick = () => {
-        // Переходимо до наступного слова без оновлення статусу
+    const updateCurrentSelectionItem = async () => {
+        const currentWord =
+            exerciseState.currentSelection[
+                exerciseState.currentVocabularyWordIndex
+            ];
+
+        const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
+            return (
+                checkpoint.checkpoint ===
+                currentWord.metodology_parameters
+                    .checkpoint_listen_and_fill_the_gap_exercise
+            );
+        });
+
+        const currentLastReviewed =
+            currentWord.metodology_parameters
+                .last_reviewed_listen_and_fill_the_gap_exercise;
+        const today = new Date().toISOString().split("T")[0];
+
+        let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
+        if (currentLastReviewed !== today) {
+            if (!isCorrect && currentCheckpointIndex !== 0) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex - 1].checkpoint;
+            } else if (
+                isCorrect &&
+                checkpoints.length !== currentCheckpointIndex + 1
+            ) {
+                nextCheckpoint =
+                    checkpoints[currentCheckpointIndex + 1].checkpoint;
+            }
+        }
+
+        console.log(isCorrect);
+        try {
+            await doUpdateVocabularyWord({
+                id: currentWord.id,
+                exerciseType: exerciseState.exerciseType,
+                metodology_parameters: {
+                    status_listen_and_fill_the_gap_exercise: isCorrect
+                        ? "REVIEW"
+                        : "AGAIN",
+                    last_reviewed_listen_and_fill_the_gap_exercise:
+                        new Date().toISOString(),
+                    checkpoint_listen_and_fill_the_gap_exercise: nextCheckpoint,
+                },
+            });
+        } catch (error) {
+            console.error("Помилка оновлення:", error);
+        }
+    };
+
+    const handleNextClick = async () => {
+        if (exerciseState.currentSelection.length === 0) {
+            console.log("Немає слів для проходження");
+            return;
+        }
+
+        await updateCurrentSelectionItem();
+
         const nextIndex = getNextVocabularyItemIndex();
         dispatch({
             type: "vocabularyWords/updateExerciseState",
@@ -209,11 +274,11 @@ const ListenAndFillTheGapExercise = () => {
                                 <button
                                     onClick={() =>
                                         handlePlayAudio(
-                                            exerciseData?.audioSentence
+                                            exerciseData?.completeSentence
                                         )
                                     }
                                     disabled={
-                                        !exerciseData?.audioSentence ||
+                                        !exerciseData?.completeSentence ||
                                         isGeneratingAudio ||
                                         combinedProcessing
                                     }
@@ -233,16 +298,16 @@ const ListenAndFillTheGapExercise = () => {
                                 <div>
                                     <p className="text-lg text-gray-800 font-mono tracking-wide mb-3">
                                         {showResult
-                                            ? exerciseData.audioSentence
+                                            ? exerciseData.completeSentence
                                                   .split(
                                                       new RegExp(
-                                                          `(\\b${exerciseData.correctForm}\\b)`,
+                                                          `(\\b${exerciseData.correctAnswer}\\b)`,
                                                           "gi"
                                                       )
                                                   )
                                                   .map((part, index) =>
                                                       part.toLowerCase() ===
-                                                      exerciseData.correctForm.toLowerCase() ? (
+                                                      exerciseData.correctAnswer.toLowerCase() ? (
                                                           <mark
                                                               key={index}
                                                               className={`px-2 py-1 rounded font-bold ${

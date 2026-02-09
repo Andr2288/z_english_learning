@@ -93,6 +93,8 @@ const PracticePage = () => {
     const handleExerciseButtonClick = (exerciseType) => {
         dispatch(
             updateExerciseState({
+                currentVocabularyWordIndex: 0,
+                generateNextStage: true,
                 exerciseType,
             })
         );
