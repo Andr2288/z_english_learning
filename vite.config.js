@@ -4,6 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-    base: "z_english_learning",
+    base: "/z_english_learning/",
     plugins: [react(), tailwindcss()],
 });
