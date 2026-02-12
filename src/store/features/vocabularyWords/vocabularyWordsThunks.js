@@ -62,7 +62,7 @@ const fetchVocabularyWords = createAsyncThunk(
         const { data: vocabulary_words, error } = await supabase
             .from("vocabulary_words")
             .select("*")
-            .order("id", { ascending: true });
+            .order("id", { ascending: false });
 
         if (error) {
             throw new Error(error.message);

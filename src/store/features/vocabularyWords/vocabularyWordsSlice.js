@@ -59,7 +59,7 @@ const findMissedVocabularyItems = (state) => {
             console.log(
                 `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
                     Current Checkpoint: ${vocabularyItem.metodology_parameters[currentTypeCheckpointProperty]}
-                    Last previewed: ${vocabularyItem.metodology_parameters[currentTypeLastReviewedProperty]}
+                    Last previewed: ${new Date(vocabularyItem.metodology_parameters[currentTypeLastReviewedProperty])}
                     Threshold for Current Checkpoint: ${state.checkpoints[currentCheckpointIndex].threshold}
                     Days passed after last review: ${daysPassedAfterLastReview}
                     ***
@@ -136,6 +136,10 @@ const selectNextItems = (state) => {
         );
     });
     if (yesterdayItemIndex !== -1) {
+        state.data[yesterdayItemIndex].metodology_parameters[
+            currentTypeStatusProperty
+        ] = "LEARNING";
+
         nextSelection.push(state.data[yesterdayItemIndex]);
         console.log(
             `Знайшов Item reviewed 1 day ago: ${state.data[yesterdayItemIndex].main_parameters.text}`
@@ -173,6 +177,10 @@ const selectNextItems = (state) => {
         );
     });
     if (sevenDaysAgoItemIndex !== -1) {
+        state.data[sevenDaysAgoItemIndex].metodology_parameters[
+            currentTypeStatusProperty
+        ] = "LEARNING";
+
         nextSelection.push(state.data[sevenDaysAgoItemIndex]);
         console.log(
             `Знайшов Item reviewed 7 days ago: ${state.data[sevenDaysAgoItemIndex].main_parameters.text}`
@@ -211,6 +219,10 @@ const selectNextItems = (state) => {
         );
     });
     if (fourteenDaysAgoItemIndex !== -1) {
+        state.data[fourteenDaysAgoItemIndex].metodology_parameters[
+            currentTypeStatusProperty
+        ] = "LEARNING";
+
         nextSelection.push(state.data[fourteenDaysAgoItemIndex]);
         console.log(
             `Знайшов Item reviewed 14 days ago: ${state.data[fourteenDaysAgoItemIndex].main_parameters.text}`
@@ -249,6 +261,10 @@ const selectNextItems = (state) => {
         );
     });
     if (thirtyDaysAgoItemIndex !== -1) {
+        state.data[thirtyDaysAgoItemIndex].metodology_parameters[
+            currentTypeStatusProperty
+        ] = "LEARNING";
+
         nextSelection.push(state.data[thirtyDaysAgoItemIndex]);
         console.log(
             `Знайшов Item reviewed 30 days ago: ${state.data[thirtyDaysAgoItemIndex].main_parameters.text}`
@@ -437,6 +453,8 @@ const vocabularyWordsSlice = createSlice({
                         word.last_reviewed_listen_and_fill_the_gap_exercise,
                 },
             }));
+
+            console.log(state.data);
 
             findMissedVocabularyItems(state);
             state.exerciseState.currentSelection = selectNextItems(state);
