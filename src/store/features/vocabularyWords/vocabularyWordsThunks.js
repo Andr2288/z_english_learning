@@ -232,6 +232,7 @@ Return a JSON object with this exact structure:
 }
 
 Requirements:
+- Create the sentence for English learners (BEGINNER Level - A1)
 - Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
 - The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
@@ -309,6 +310,7 @@ Return a JSON object with this exact structure:
 }
 
 Requirements:
+- Create the sentence for English learners (BEGINNER Level - A1)
 - Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
 - The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)

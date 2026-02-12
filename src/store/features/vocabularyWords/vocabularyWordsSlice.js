@@ -385,10 +385,6 @@ const vocabularyWordsSlice = createSlice({
                     relevant_translations: word.relevant_translations,
                 },
                 metodology_parameters: {
-                    status: word.status,
-                    lastReviewed: word.last_reviewed,
-                    checkpoint: word.checkpoint,
-
                     status_translate_sentence_exercise:
                         word.status_translate_sentence_exercise,
                     status_fill_the_gap_exercise:
@@ -426,11 +422,6 @@ const vocabularyWordsSlice = createSlice({
                     relevant_translations: word.relevant_translations,
                 },
                 metodology_parameters: {
-                    status: word.status,
-                    lastReviewed: word.last_reviewed,
-                    checkpoint: word.checkpoint,
-                    createdAt: word.created_at,
-
                     status_translate_sentence_exercise:
                         word.status_translate_sentence_exercise,
                     status_fill_the_gap_exercise:
@@ -451,13 +442,12 @@ const vocabularyWordsSlice = createSlice({
                         word.last_reviewed_fill_the_gap_exercise,
                     last_reviewed_listen_and_fill_the_gap_exercise:
                         word.last_reviewed_listen_and_fill_the_gap_exercise,
+
+                    createdAt: word.created_at,
                 },
             }));
 
             console.log(state.data);
-
-            findMissedVocabularyItems(state);
-            state.exerciseState.currentSelection = selectNextItems(state);
         });
 
         builder.addCase(updateVocabularyWord.pending, (state) => {
@@ -477,10 +467,6 @@ const vocabularyWordsSlice = createSlice({
                         relevant_translations: word.relevant_translations,
                     },
                     metodology_parameters: {
-                        status: word.status,
-                        lastReviewed: word.last_reviewed,
-                        checkpoint: word.checkpoint,
-
                         status_translate_sentence_exercise:
                             word.status_translate_sentence_exercise,
                         status_fill_the_gap_exercise:

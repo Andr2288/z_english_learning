@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -14,7 +14,12 @@ import {
     Type,
     Languages,
 } from "lucide-react";
-import { updateExerciseState } from "../store/index.js";
+import {
+    fetchVocabularyWords,
+    makeNextSelection,
+    updateExerciseState,
+} from "../store/index.js";
+import { useThunk } from "../hooks/use-thunk.js";
 
 const PracticePage = () => {
     const dispatch = useDispatch();
@@ -26,6 +31,16 @@ const PracticePage = () => {
     const { exerciseState } = useSelector((state) => {
         return state.vocabularyWords;
     });
+
+    const [
+        doFetchVocabularyWords,
+        isLoadingVocabularyWords,
+        loadingVocabularyWordsError,
+    ] = useThunk(fetchVocabularyWords);
+
+    useEffect(() => {
+        doFetchVocabularyWords();
+    }, [doFetchVocabularyWords]);
 
     const ExerciseType = {
         TranslateSentenceExercise: "translate_sentence_exercise",
@@ -98,6 +113,8 @@ const PracticePage = () => {
                 exerciseType,
             })
         );
+
+        dispatch(makeNextSelection());
 
         setUiState((prev) => {
             return {
@@ -210,7 +227,11 @@ const PracticePage = () => {
                 </div>
             )}
 
-            {uiState.showExercise && exercise}
+            {uiState.showExercise && (
+                <div className="flex-1 flex overflow-y-auto p-8">
+                    {exercise}
+                </div>
+            )}
         </div>
     );
 };

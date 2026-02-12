@@ -14,12 +14,6 @@ const FillTheGapExercise = () => {
     const dispatch = useDispatch();
 
     const [
-        doFetchVocabularyWords,
-        isLoadingVocabularyWords,
-        loadingVocabularyWordsError,
-    ] = useThunk(fetchVocabularyWords);
-
-    const [
         doUpdateVocabularyWord,
         isUpdatingVocabularyWord,
         updateVocabularyWordError,
@@ -46,7 +40,7 @@ const FillTheGapExercise = () => {
     const [correctAnswer, setCorrectAnswer] = useState("");
     const [isTranslating, setIsTranslating] = useState(false);
 
-    const isLoading = isLoadingVocabularyWords || isGenerating;
+    const isLoading = isGenerating;
     const combinedProcessing = isGenerating;
 
     const loadExercise = async (vocabularyWordMainParameters) => {
@@ -113,11 +107,6 @@ const FillTheGapExercise = () => {
         exerciseState.currentVocabularyWordIndex,
         exerciseState.generateNextStage,
     ]);
-
-    // Завантаження слів при монтуванні
-    useEffect(() => {
-        doFetchVocabularyWords();
-    }, [doFetchVocabularyWords]);
 
     const handleAnswerSelect = (option) => {
         if (selectedAnswer !== null) return;
@@ -209,23 +198,21 @@ const FillTheGapExercise = () => {
     };
 
     return (
-        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-160 sm:min-h-130 bg-white rounded-2xl shadow-md p-6 lg:p-12 pt-12 lg:pt-16 pb-10 mx-5 sm:m-auto">
+        <div className="w-full sm:w-2/3 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8 mx-5 sm:m-auto">
             {isLoading ? (
-                <div className="text-center py-12">
+                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                    <p className="text-gray-600">
-                        {isGenerating
-                            ? "Генерую речення..."
-                            : "Завантаження..."}
+                    <p className="text-sm sm:text-base text-gray-600">
+                        Зачекайте, будь ласка ...
                     </p>
                 </div>
             ) : (
                 <>
-                    <div className="text-center mb-8">
-                        <h2 className="text-lg font-medium text-gray-700 mb-4">
+                    <div className="text-center mb-6">
+                        <h2 className="text-lg font-semibold text-gray-700 mb-4">
                             Яке слово підходить для пропуску?
                         </h2>
-                        <div className="bg-green-100/80 rounded-xl p-6 border-l-4 border-emerald-400">
+                        <div className="bg-green-100/80 rounded-md p-6 border-l-4 border-r-4 border-emerald-400">
                             <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide mb-3">
                                 {showResult
                                     ? sentenceData?.completeSentence
@@ -243,8 +230,8 @@ const FillTheGapExercise = () => {
                                                           key={index}
                                                           className={`px-2 py-1 rounded font-bold ${
                                                               isCorrect
-                                                                  ? "bg-green-300 text-green-800"
-                                                                  : "bg-yellow-300 text-yellow-800"
+                                                                  ? "bg-green-300 text-green-900"
+                                                                  : "bg-yellow-300 text-yellow-900"
                                                           }`}
                                                       >
                                                           {part}
@@ -253,48 +240,24 @@ const FillTheGapExercise = () => {
                                                       part
                                                   )
                                               )
-                                        : `Complete this sentence: I need to ${correctAnswer} this word.`
-                                    : sentenceData?.displaySentence ||
-                                      `Complete this sentence: I need to ____ this word.`}
+                                        : null
+                                    : sentenceData?.displaySentence}
                             </p>
 
                             {showResult &&
                                 sentenceData?.sentenceTranslation && (
-                                    <div className="mt-3 pt-3 border-t border-emerald-200">
-                                        <p className="text-sm text-gray-600 mb-1">
-                                            Переклад речення:
-                                        </p>
+                                    <div className="pt-3 border-t border-emerald-300">
+                                        {/*<p className="text-sm text-gray-700 mb-1">*/}
+                                        {/*    Переклад речення:*/}
+                                        {/*</p>*/}
                                         <p className="text-base text-gray-700 italic">
                                             {sentenceData.sentenceTranslation}
                                         </p>
                                     </div>
                                 )}
 
-                            {showResult &&
-                                !sentenceData?.sentenceTranslation &&
-                                isTranslating && (
-                                    <div className="mt-3 pt-3 border-t border-emerald-200">
-                                        <div className="flex items-center text-emerald-600">
-                                            <Loader className="w-4 h-4 animate-spin mr-2" />
-                                            <span className="text-sm">
-                                                Генерую переклад...
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-
-                            {showResult &&
-                                !sentenceData?.sentenceTranslation &&
-                                !isTranslating && (
-                                    <div className="mt-3 pt-3 border-t border-emerald-200">
-                                        <p className="text-sm text-gray-500 italic">
-                                            💭 Переклад тимчасово недоступний
-                                        </p>
-                                    </div>
-                                )}
-
                             {sentenceData?.hint && !showResult && (
-                                <p className="text-sm text-emerald-600 mt-3 italic">
+                                <p className="text-sm text-emerald-600 font-medium pt-3 italic">
                                     Підказка: {sentenceData.hint}
                                 </p>
                             )}
@@ -302,10 +265,10 @@ const FillTheGapExercise = () => {
                     </div>
 
                     {/* Answer Options */}
-                    <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto">
+                    <div className="grid grid-cols-2 gap-4 w-full mx-auto mb-6">
                         {answerOptions.map((option, index) => {
                             let buttonClass =
-                                "w-full p-6 text-center rounded-xl border-2 transition-all duration-200 font-medium text-lg ";
+                                "w-full p-5 text-center rounded-xl border-2 transition-all duration-200 font-medium text-lg ";
 
                             if (selectedAnswer === null) {
                                 buttonClass += combinedProcessing
@@ -319,7 +282,7 @@ const FillTheGapExercise = () => {
                                     "border-green-500 bg-green-50 text-green-700 shadow-lg";
                             } else if (option === selectedAnswer) {
                                 buttonClass +=
-                                    "border-red-500 bg-red-50 text-red-700 shadow-lg";
+                                    "border-red-400 bg-red-50 text-red-700 shadow-lg";
                             } else {
                                 buttonClass +=
                                     "border-gray-200 bg-gray-50 text-gray-500";
@@ -355,16 +318,21 @@ const FillTheGapExercise = () => {
                     </div>
 
                     {/* Next Button */}
-                    {showResult && (
-                        <div className="flex justify-center mt-4">
-                            <button
-                                onClick={handleNextClick}
-                                className="px-8 py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-semibold shadow-md hover:shadow-lg hover:scale-102 cursor-pointer"
-                            >
-                                Далі
-                            </button>
-                        </div>
-                    )}
+                    <div className="w-1/2 flex justify-center">
+                        <button
+                            onClick={handleNextClick}
+                            disabled={
+                                selectedAnswer === null || combinedProcessing
+                            }
+                            className={`px-6 sm:px-22.5 py-3.5 rounded-md font-semibold flex-1 text-[17px] transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 shadow-md w-full sm:w-auto ${
+                                selectedAnswer === null || combinedProcessing
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white hover:shadow-lg hover:scale-102 cursor-pointer"
+                            }`}
+                        >
+                            Далі
+                        </button>
+                    </div>
                 </>
             )}
         </div>

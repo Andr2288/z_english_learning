@@ -13,12 +13,6 @@ const ListenAndFillTheGapExercise = () => {
     const dispatch = useDispatch();
 
     const [
-        doFetchVocabularyWords,
-        isLoadingVocabularyWords,
-        loadingVocabularyWordsError,
-    ] = useThunk(fetchVocabularyWords);
-
-    const [
         doUpdateVocabularyWord,
         isUpdatingVocabularyWord,
         updateVocabularyWordError,
@@ -47,13 +41,8 @@ const ListenAndFillTheGapExercise = () => {
 
     const inputRef = useRef(null);
 
-    const isLoading = isLoadingVocabularyWords || isGenerating;
+    const isLoading = isGenerating;
     const combinedProcessing = isGenerating;
-
-    // Завантаження слів при монтуванні
-    useEffect(() => {
-        doFetchVocabularyWords();
-    }, [doFetchVocabularyWords]);
 
     // Генерація вправи при зміні поточного слова
     useEffect(() => {
@@ -251,25 +240,23 @@ const ListenAndFillTheGapExercise = () => {
     };
 
     return (
-        <div className="w-full sm:w-3/4 lg:w-1/2 min-h-160 sm:min-h-130 bg-white rounded-2xl shadow-md p-6 lg:p-12 pt-12 lg:pt-16 pb-10 mx-5 sm:m-auto">
+        <div className="w-full sm:w-2/3 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8 mx-5 sm:m-auto">
             {isLoading ? (
-                <div className="text-center py-12">
+                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                    <p className="text-gray-600">
-                        {isGenerating
-                            ? "Генерую завдання..."
-                            : "Завантаження..."}
+                    <p className="text-sm sm:text-base text-gray-600">
+                        Зачекайте, будь ласка ...
                     </p>
                 </div>
             ) : (
                 <>
                     {/* Audio Controls */}
                     <div className="text-center mb-8">
-                        <h2 className="text-lg font-medium text-gray-700 mb-4">
+                        <h2 className="text-lg font-semibold text-gray-700 mb-4">
                             Яке слово ви чуєте на місці пропуску?
                         </h2>
 
-                        <div className="bg-blue-100/80 rounded-xl p-6 border-l-4 border-blue-400 mb-6">
+                        <div className="bg-blue-100/80 rounded-md p-6 border-l-4 border-r-4 border-blue-400">
                             <div className="flex items-center justify-center mb-4">
                                 <button
                                     onClick={() =>
@@ -296,7 +283,7 @@ const ListenAndFillTheGapExercise = () => {
                             {/* Show sentence text */}
                             {exerciseData?.displaySentence && (
                                 <div>
-                                    <p className="text-lg text-gray-800 font-mono tracking-wide mb-3">
+                                    <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide mb-3">
                                         {showResult
                                             ? exerciseData.completeSentence
                                                   .split(
@@ -312,8 +299,8 @@ const ListenAndFillTheGapExercise = () => {
                                                               key={index}
                                                               className={`px-2 py-1 rounded font-bold ${
                                                                   isCorrect
-                                                                      ? "bg-green-300 text-green-800"
-                                                                      : "bg-yellow-300 text-yellow-800"
+                                                                      ? "bg-green-300 text-green-900"
+                                                                      : "bg-yellow-300 text-yellow-900"
                                                               }`}
                                                           >
                                                               {part}
@@ -327,38 +314,14 @@ const ListenAndFillTheGapExercise = () => {
 
                                     {showResult &&
                                         exerciseData.sentenceTranslation && (
-                                            <div className="mt-3 pt-3 border-t border-blue-200">
-                                                <p className="text-sm text-gray-600 mb-1">
-                                                    Переклад речення:
-                                                </p>
+                                            <div className="pt-3 border-t border-blue-300">
+                                                {/*<p className="text-sm text-gray-600 mb-1">*/}
+                                                {/*    Переклад речення:*/}
+                                                {/*</p>*/}
                                                 <p className="text-base text-gray-700 italic">
                                                     {
                                                         exerciseData.sentenceTranslation
                                                     }
-                                                </p>
-                                            </div>
-                                        )}
-
-                                    {showResult &&
-                                        !exerciseData.sentenceTranslation &&
-                                        isTranslating && (
-                                            <div className="mt-3 pt-3 border-t border-blue-200">
-                                                <div className="flex items-center text-blue-600">
-                                                    <Loader className="w-4 h-4 animate-spin mr-2" />
-                                                    <span className="text-sm">
-                                                        Генерую переклад...
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                    {showResult &&
-                                        !exerciseData.sentenceTranslation &&
-                                        !isTranslating && (
-                                            <div className="mt-3 pt-3 border-t border-blue-200">
-                                                <p className="text-sm text-gray-500 italic">
-                                                    💭 Переклад тимчасово
-                                                    недоступний
                                                 </p>
                                             </div>
                                         )}
@@ -368,8 +331,8 @@ const ListenAndFillTheGapExercise = () => {
                     </div>
 
                     {/* Answer Input */}
-                    <div className="space-y-4">
-                        <div className="max-w-md mx-auto">
+                    <div className="w-1/2 space-y-4">
+                        <div className="mx-auto">
                             <div className="relative">
                                 <input
                                     ref={inputRef}
@@ -381,7 +344,7 @@ const ListenAndFillTheGapExercise = () => {
                                     onKeyPress={handleKeyPress}
                                     disabled={showResult || combinedProcessing}
                                     placeholder="Впишіть слово..."
-                                    className={`w-full p-4 text-lg text-center rounded-xl border-2 transition-all duration-200 font-medium ${
+                                    className={`w-full p-4 text-[17px] text-gray-800 text-center rounded-md border-2 transition-all duration-200 font-semibold ${
                                         showResult
                                             ? isCorrect
                                                 ? "border-green-500 bg-green-50 text-green-700"
@@ -403,36 +366,33 @@ const ListenAndFillTheGapExercise = () => {
                             </div>
                         </div>
 
-                        {!showResult && (
-                            <div className="text-center">
+                        {!showResult ? (
+                            <div className="flex justify-center text-center">
                                 <button
                                     onClick={handleSubmitAnswer}
                                     disabled={
                                         !userAnswer.trim() || combinedProcessing
                                     }
-                                    className={`bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 px-8 rounded-xl font-medium transition-all ${
-                                        combinedProcessing
-                                            ? "cursor-not-allowed"
-                                            : ""
+                                    className={`px-6 sm:px-22.5 py-3.5 rounded-md font-semibold flex-1 text-[17px] transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 shadow-md w-full sm:w-auto ${
+                                        !userAnswer.trim() || combinedProcessing
+                                            ? "bg-gray-400 text-white cursor-not-allowed"
+                                            : "bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white hover:shadow-lg hover:scale-102 cursor-pointer"
                                     }`}
                                 >
                                     Перевірити
                                 </button>
                             </div>
+                        ) : (
+                            <div className="flex justify-center text-center mt-4">
+                                <button
+                                    onClick={handleNextClick}
+                                    className={`px-6 sm:px-22.5 py-3.5 rounded-md font-semibold text-[17px] flex-1 transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full`}
+                                >
+                                    Далі
+                                </button>
+                            </div>
                         )}
                     </div>
-
-                    {/* Next Button */}
-                    {showResult && (
-                        <div className="flex justify-center mt-8">
-                            <button
-                                onClick={handleNextClick}
-                                className="px-8 py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-semibold shadow-md hover:shadow-lg hover:scale-102 cursor-pointer"
-                            >
-                                Далі
-                            </button>
-                        </div>
-                    )}
                 </>
             )}
         </div>
