@@ -157,10 +157,10 @@ OUTPUT:
         const response = await client.responses.create({
             //model: "gpt-4o-mini", // швидкий // погана граматика
             //model: "gpt-4.1-mini", // трішки краща граматика
-            model: GPTModel.GPT41Mini, // довго, але краща граматика
+            model: GPTModel.GPT5Mini,
 
-            //reasoning: { effort: "low" },
-            temperature: 0.6,
+            reasoning: { effort: "low" },
+            //temperature: 0.6,
             input,
         });
 
