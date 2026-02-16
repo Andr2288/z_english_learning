@@ -125,7 +125,7 @@ const PracticePage = () => {
     };
 
     return (
-        <div className="fixed ml-68 inset-0 flex flex-col min-h-screen bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="fixed md:ml-68 inset-0 flex flex-col min-h-screen bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
             {/* Hero Section */}
             {!uiState.showExercise && (
                 <div className="shrink-0 bg-white border-b border-gray-200 overflow-hidden p-8">

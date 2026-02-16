@@ -34,7 +34,7 @@ const Navbar = () => {
     ];
 
     return (
-        <div className="bg-white h-screen w-68 fixed left-0 top-0 border-r border-gray-200 flex flex-col">
+        <div className="bg-white h-screen w-68 hidden md:fixed left-0 top-0 border-r border-gray-200 md:flex md:flex-col">
             {/* Header */}
             <div className="p-8 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
