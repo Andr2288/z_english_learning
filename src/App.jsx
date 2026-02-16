@@ -27,16 +27,23 @@ function App() {
             <Navbar />
 
             <Routes>
+                {/*<Route*/}
+                {/*    path="/"*/}
+                {/*    element={authUser ? <HomePage /> : <Navigate to="/login" />}*/}
+                {/*/>*/}
                 <Route
                     path="/"
-                    element={authUser ? <HomePage /> : <Navigate to="/login" />}
-                />
-                <Route
-                    path="/practice"
                     element={
                         authUser ? <PracticePage /> : <Navigate to="/login" />
                     }
                 />
+
+                {/*<Route*/}
+                {/*    path="/practice"*/}
+                {/*    element={*/}
+                {/*        authUser ? <PracticePage /> : <Navigate to="/login" />*/}
+                {/*    }*/}
+                {/*/>*/}
                 <Route
                     path="/signup"
                     element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
