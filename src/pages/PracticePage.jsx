@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -8,11 +8,13 @@ import {
 } from "../components/exercises/index.js";
 
 import {
+    ChevronLeft,
     ChevronRight,
     Target,
     Headphones,
     Type,
     Languages,
+    BarChart2,
 } from "lucide-react";
 import {
     fetchVocabularyWords,
@@ -21,6 +23,181 @@ import {
 } from "../store/index.js";
 import { useThunk } from "../hooks/use-thunk.js";
 
+const STATUS_CONFIG = {
+    NEW: {
+        label: "Нові",
+        color: "bg-blue-500",
+        textColor: "text-blue-700",
+        bg: "bg-blue-50",
+        border: "border-blue-200",
+    },
+    LEARNING: {
+        label: "Вивчаються",
+        color: "bg-green-500",
+        textColor: "text-green-700",
+        bg: "bg-green-50",
+        border: "border-green-200",
+    },
+    REVIEW: {
+        label: "На повторенні",
+        color: "bg-purple-500",
+        textColor: "text-purple-700",
+        bg: "bg-purple-50",
+        border: "border-purple-200",
+    },
+    AGAIN: {
+        label: "Повторити",
+        color: "bg-orange-500",
+        textColor: "text-orange-700",
+        bg: "bg-orange-50",
+        border: "border-orange-200",
+    },
+    MISSED: {
+        label: "Пропущені",
+        color: "bg-red-500",
+        textColor: "text-red-700",
+        bg: "bg-red-50",
+        border: "border-red-200",
+    },
+};
+
+const ExerciseType = {
+    TranslateSentenceExercise: "translate_sentence_exercise",
+    FillTheGapExercise: "fill_the_gap_exercise",
+    ListenAndFillTheGapExercise: "listen_and_fill_the_gap_exercise",
+};
+
+const EXERCISE_STATUS_KEY = {
+    [ExerciseType.TranslateSentenceExercise]:
+        "status_translate_sentence_exercise",
+    [ExerciseType.FillTheGapExercise]: "status_fill_the_gap_exercise",
+    [ExerciseType.ListenAndFillTheGapExercise]:
+        "status_listen_and_fill_the_gap_exercise",
+};
+
+const EXERCISE_LABEL = {
+    [ExerciseType.TranslateSentenceExercise]: "Переклади речення",
+    [ExerciseType.FillTheGapExercise]: "Доповни речення",
+    [ExerciseType.ListenAndFillTheGapExercise]: "Слухання та письмо",
+};
+
+const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
+    const statusKey =
+        EXERCISE_STATUS_KEY[exerciseType] ||
+        "status_translate_sentence_exercise";
+
+    const stats = useMemo(() => {
+        const counts = { NEW: 0, LEARNING: 0, REVIEW: 0, AGAIN: 0, MISSED: 0 };
+        data.forEach((word) => {
+            const status = word.metodology_parameters?.[statusKey];
+            if (status && counts[status] !== undefined) {
+                counts[status]++;
+            }
+        });
+        return counts;
+    }, [data, statusKey]);
+
+    const total = data.length;
+
+    return (
+        <>
+            {/* Toggle Button */}
+            <button
+                onClick={onToggle}
+                className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 text-gray-600 hover:text-blue-600 text-sm font-medium cursor-pointer"
+            >
+                <BarChart2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Статистика</span>
+                <ChevronLeft
+                    className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                />
+            </button>
+
+            {/* Sidebar Panel */}
+            <div
+                className={`absolute top-0 right-0 h-full z-10 transition-all duration-300 ease-in-out ${
+                    isOpen ? "w-64" : "w-0"
+                } overflow-hidden`}
+            >
+                <div className="w-64 h-full bg-white border-l border-gray-200 shadow-xl flex flex-col">
+                    {/* Header */}
+                    <div className="p-5 border-b border-gray-100">
+                        <div className="flex items-center gap-2 mt-10">
+                            <div className="w-7 h-7 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                <BarChart2 className="w-4 h-4 text-white" />
+                            </div>
+                            <h3 className="font-bold text-gray-800 text-sm">
+                                Статистика слів
+                            </h3>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1.5 ml-9">
+                            Всього: {total} слів
+                        </p>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+                        {Object.entries(STATUS_CONFIG).map(
+                            ([status, config]) => {
+                                const count = stats[status] || 0;
+                                const percent =
+                                    total > 0
+                                        ? +((count / total) * 100).toFixed(2)
+                                        : 0;
+
+                                return (
+                                    <div
+                                        key={status}
+                                        className={`rounded-xl border p-3.5 ${config.bg} ${config.border}`}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <span
+                                                    className={`w-2 h-2 rounded-full ${config.color}`}
+                                                />
+                                                <span
+                                                    className={`text-xs font-semibold ${config.textColor}`}
+                                                >
+                                                    {config.label}
+                                                </span>
+                                            </div>
+                                            <span
+                                                className={`text-lg font-bold ${config.textColor}`}
+                                            >
+                                                {count}
+                                            </span>
+                                        </div>
+                                        {/* Progress bar */}
+                                        <div className="h-1.5 bg-white/60 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full ${config.color} rounded-full transition-all duration-500`}
+                                                style={{ width: `${percent}%` }}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            {percent}%
+                                        </p>
+                                    </div>
+                                );
+                            }
+                        )}
+                    </div>
+
+                    {/* Current Exercise */}
+                    <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+                        <p className="text-xs text-gray-400 text-center">
+                            Поточна вправа
+                        </p>
+                        <p className="text-xs font-medium text-gray-600 text-center mt-0.5">
+                            {EXERCISE_LABEL[exerciseType] || "—"}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
 const PracticePage = () => {
     const dispatch = useDispatch();
 
@@ -28,7 +205,7 @@ const PracticePage = () => {
         showExercise: false,
     });
 
-    const { exerciseState } = useSelector((state) => {
+    const { exerciseState, data } = useSelector((state) => {
         return state.vocabularyWords;
     });
 
@@ -122,6 +299,13 @@ const PracticePage = () => {
                 showExercise: true,
             };
         });
+    };
+
+    const toggleStatsSidebar = () => {
+        setUiState((prev) => ({
+            ...prev,
+            showStatsSidebar: !prev.showStatsSidebar,
+        }));
     };
 
     return (
@@ -227,9 +411,16 @@ const PracticePage = () => {
                 </div>
             )}
 
+            {/* Exercise View with Stats Sidebar */}
             {uiState.showExercise && (
-                <div className="flex-1 flex overflow-y-auto p-8">
+                <div className="relative flex-1 flex overflow-y-auto p-8">
                     {exercise}
+                    <StatsSidebar
+                        isOpen={uiState.showStatsSidebar}
+                        onToggle={toggleStatsSidebar}
+                        data={data}
+                        exerciseType={exerciseState.exerciseType}
+                    />
                 </div>
             )}
         </div>
