@@ -7,9 +7,21 @@ import {
 } from "./vocabularyWordsThunks";
 
 const findMissedVocabularyItems = (state) => {
-    const currentTypeStatusProperty = `status_${state.exerciseState.exerciseType}`;
-    const currentTypeCheckpointProperty = `checkpoint_${state.exerciseState.exerciseType}`;
-    const currentTypeLastReviewedProperty = `last_reviewed_${state.exerciseState.exerciseType}`;
+    let currentTypeStatusProperty = "";
+    let currentTypeCheckpointProperty = "";
+    let currentTypeLastReviewedProperty = "";
+
+    if (state.singleStatusMode) {
+        currentTypeStatusProperty = "status_translate_sentence_exercise";
+        currentTypeCheckpointProperty =
+            "checkpoint_translate_sentence_exercise";
+        currentTypeLastReviewedProperty =
+            "last_reviewed_translate_sentence_exercise";
+    } else {
+        currentTypeStatusProperty = `status_${state.exerciseState.exerciseType}`;
+        currentTypeCheckpointProperty = `checkpoint_${state.exerciseState.exerciseType}`;
+        currentTypeLastReviewedProperty = `last_reviewed_${state.exerciseState.exerciseType}`;
+    }
 
     console.log(state.exerciseState.exerciseType);
 
@@ -85,9 +97,21 @@ const findMissedVocabularyItems = (state) => {
 };
 
 const selectNextItems = (state) => {
-    const currentTypeStatusProperty = `status_${state.exerciseState.exerciseType}`;
-    const currentTypeCheckpointProperty = `checkpoint_${state.exerciseState.exerciseType}`;
-    const currentTypeLastReviewedProperty = `last_reviewed_${state.exerciseState.exerciseType}`;
+    let currentTypeStatusProperty = "";
+    let currentTypeCheckpointProperty = "";
+    let currentTypeLastReviewedProperty = "";
+
+    if (state.singleStatusMode) {
+        currentTypeStatusProperty = "status_translate_sentence_exercise";
+        currentTypeCheckpointProperty =
+            "checkpoint_translate_sentence_exercise";
+        currentTypeLastReviewedProperty =
+            "last_reviewed_translate_sentence_exercise";
+    } else {
+        currentTypeStatusProperty = `status_${state.exerciseState.exerciseType}`;
+        currentTypeCheckpointProperty = `checkpoint_${state.exerciseState.exerciseType}`;
+        currentTypeLastReviewedProperty = `last_reviewed_${state.exerciseState.exerciseType}`;
+    }
 
     const nextSelection = [];
 
@@ -329,6 +353,7 @@ const selectNextItems = (state) => {
 const vocabularyWordsSlice = createSlice({
     name: "vocabularyWords",
     initialState: {
+        singleStatusMode: true,
         data: [],
         exerciseState: {
             exerciseType: "translate-sentence",
