@@ -24,9 +24,11 @@ const ListenAndFillTheGapExercise = () => {
     const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
         useThunk(generateSpeech);
 
-    const { data, exerciseState, checkpoints } = useSelector((state) => {
-        return state.vocabularyWords;
-    });
+    const { singleStatusMode, data, exerciseState, checkpoints } = useSelector(
+        (state) => {
+            return state.vocabularyWords;
+        }
+    );
 
     // TranslateSentenceExercise state
     const [exerciseData, setExerciseData] = useState(null);
@@ -163,17 +165,38 @@ const ListenAndFillTheGapExercise = () => {
                 exerciseState.currentVocabularyWordIndex
             ];
 
-        const currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
-            return (
-                checkpoint.checkpoint ===
-                currentWord.metodology_parameters
-                    .checkpoint_listen_and_fill_the_gap_exercise
-            );
-        });
+        let currentCheckpointIndex = 0;
 
-        const currentLastReviewed =
-            currentWord.metodology_parameters
-                .last_reviewed_listen_and_fill_the_gap_exercise;
+        if (singleStatusMode) {
+            currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
+                return (
+                    checkpoint.checkpoint ===
+                    currentWord.metodology_parameters
+                        .checkpoint_translate_sentence_exercise
+                );
+            });
+        } else {
+            currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
+                return (
+                    checkpoint.checkpoint ===
+                    currentWord.metodology_parameters
+                        .checkpoint_listen_and_fill_the_gap_exercise
+                );
+            });
+        }
+
+        let currentLastReviewed = null;
+
+        if (singleStatusMode) {
+            currentLastReviewed =
+                currentWord.metodology_parameters
+                    .last_reviewed_translate_sentence_exercise;
+        } else {
+            currentLastReviewed =
+                currentWord.metodology_parameters
+                    .last_reviewed_listen_and_fill_the_gap_exercise;
+        }
+
         const today = new Date().toISOString().split("T")[0];
 
         let nextCheckpoint = checkpoints[currentCheckpointIndex].checkpoint;
@@ -192,18 +215,34 @@ const ListenAndFillTheGapExercise = () => {
 
         console.log(isCorrect);
         try {
-            await doUpdateVocabularyWord({
-                id: currentWord.id,
-                exerciseType: exerciseState.exerciseType,
-                metodology_parameters: {
-                    status_listen_and_fill_the_gap_exercise: isCorrect
-                        ? "REVIEW"
-                        : "AGAIN",
-                    last_reviewed_listen_and_fill_the_gap_exercise:
-                        new Date().toISOString(),
-                    checkpoint_listen_and_fill_the_gap_exercise: nextCheckpoint,
-                },
-            });
+            if (singleStatusMode) {
+                await doUpdateVocabularyWord({
+                    id: currentWord.id,
+                    exerciseType: "translate_sentence_exercise",
+                    metodology_parameters: {
+                        status_translate_sentence_exercise: isCorrect
+                            ? "REVIEW"
+                            : "AGAIN",
+                        last_reviewed_translate_sentence_exercise:
+                            new Date().toISOString(),
+                        checkpoint_translate_sentence_exercise: nextCheckpoint,
+                    },
+                });
+            } else {
+                await doUpdateVocabularyWord({
+                    id: currentWord.id,
+                    exerciseType: exerciseState.exerciseType,
+                    metodology_parameters: {
+                        status_listen_and_fill_the_gap_exercise: isCorrect
+                            ? "REVIEW"
+                            : "AGAIN",
+                        last_reviewed_listen_and_fill_the_gap_exercise:
+                            new Date().toISOString(),
+                        checkpoint_listen_and_fill_the_gap_exercise:
+                            nextCheckpoint,
+                    },
+                });
+            }
         } catch (error) {
             console.error("Помилка оновлення:", error);
         }
