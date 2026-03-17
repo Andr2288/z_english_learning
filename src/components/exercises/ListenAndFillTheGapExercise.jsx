@@ -239,6 +239,25 @@ const ListenAndFillTheGapExercise = () => {
         }
     };
 
+    const STATUS_MAP = {
+        NEW: {
+            label: "Нове",
+            className: "bg-blue-100 text-blue-700 border-blue-300",
+        },
+        AGAIN: {
+            label: "Повтор",
+            className: "bg-orange-100 text-orange-700 border-orange-300",
+        },
+        LEARNING: {
+            label: "Вивчається",
+            className: "bg-green-100 text-green-700 border-green-300",
+        },
+        MISSED: {
+            label: "Пропущено",
+            className: "bg-red-100 text-red-700 border-red-300",
+        },
+    };
+
     return (
         <div className="w-full sm:w-2/3 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8 mx-5 sm:m-auto">
             {isLoading ? (
@@ -250,6 +269,31 @@ const ListenAndFillTheGapExercise = () => {
                 </div>
             ) : (
                 <>
+                    {exerciseState.currentSelection.length > 0 && (
+                        <div className="mb-8 flex justify-center">
+                            <span
+                                className={`px-4 py-1.5 text-sm font-semibold rounded-full border ${
+                                    STATUS_MAP[
+                                        exerciseState.currentSelection[
+                                            exerciseState
+                                                .currentVocabularyWordIndex
+                                        ].metodology_parameters
+                                            .status_translate_sentence_exercise
+                                    ]?.className
+                                }`}
+                            >
+                                {
+                                    STATUS_MAP[
+                                        exerciseState.currentSelection[
+                                            exerciseState
+                                                .currentVocabularyWordIndex
+                                        ].metodology_parameters
+                                            .status_translate_sentence_exercise
+                                    ]?.label
+                                }
+                            </span>
+                        </div>
+                    )}
                     {/* Audio Controls */}
                     <div className="text-center mb-8">
                         <h2 className="text-lg font-semibold text-gray-700 mb-4">
