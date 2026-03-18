@@ -5,6 +5,8 @@ import {
     fetchVocabularyWords,
     generateListenAndFill,
     generateSpeech,
+    makeNextSelection,
+    updateExerciseState,
     updateVocabularyWord,
 } from "../../store";
 import { Loader, CheckCircle, XCircle, Volume2 } from "lucide-react";
@@ -257,13 +259,22 @@ const ListenAndFillTheGapExercise = () => {
         await updateCurrentSelectionItem();
 
         const nextIndex = getNextVocabularyItemIndex();
-        dispatch({
-            type: "vocabularyWords/updateExerciseState",
-            payload: {
+
+        const exercises = [
+            "translate_sentence_exercise",
+            "fill_the_gap_exercise",
+        ];
+
+        const nextExerciseType =
+            exercises[Math.floor(Math.random() * exercises.length)];
+
+        dispatch(
+            updateExerciseState({
+                exerciseType: nextExerciseType,
                 currentVocabularyWordIndex: nextIndex,
                 generateNextStage: true,
-            },
-        });
+            })
+        );
     };
 
     const getNextVocabularyItemIndex = () => {
@@ -271,7 +282,7 @@ const ListenAndFillTheGapExercise = () => {
             exerciseState.currentVocabularyWordIndex ===
             exerciseState.currentSelection.length - 1
         ) {
-            dispatch({ type: "vocabularyWords/makeNextSelection" });
+            dispatch(makeNextSelection());
             return 0;
         } else {
             return exerciseState.currentVocabularyWordIndex + 1;

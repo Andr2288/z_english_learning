@@ -128,8 +128,17 @@ const TranslateSentenceExercise = () => {
 
             const nextVocabularyItemIndex = getNextVocabularyItemIndex();
 
+            const exercises = [
+                "fill_the_gap_exercise",
+                "listen_and_fill_the_gap_exercise",
+            ];
+
+            const nextExerciseType =
+                exercises[Math.floor(Math.random() * exercises.length)];
+
             dispatch(
                 updateExerciseState({
+                    exerciseType: nextExerciseType,
                     currentVocabularyWordIndex: nextVocabularyItemIndex,
                     generateNextStage: true,
                 })

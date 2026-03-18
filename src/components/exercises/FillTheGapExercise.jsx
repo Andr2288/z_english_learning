@@ -5,6 +5,7 @@ import {
     fetchVocabularyWords,
     generateSentenceCompletion,
     generateSpeech,
+    makeNextSelection,
     updateExerciseState,
     updateVocabularyWord,
 } from "../../store";
@@ -215,8 +216,18 @@ const FillTheGapExercise = () => {
         await updateCurrentSelectionItem();
 
         const nextVocabularyItemIndex = getNextVocabularyItemIndex();
+
+        const exercises = [
+            "translate_sentence_exercise",
+            "listen_and_fill_the_gap_exercise",
+        ];
+
+        const nextExerciseType =
+            exercises[Math.floor(Math.random() * exercises.length)];
+
         dispatch(
             updateExerciseState({
+                exerciseType: nextExerciseType,
                 currentVocabularyWordIndex: nextVocabularyItemIndex,
                 generateNextStage: true,
             })
@@ -228,7 +239,7 @@ const FillTheGapExercise = () => {
             exerciseState.currentVocabularyWordIndex ===
             exerciseState.currentSelection.length - 1
         ) {
-            dispatch({ type: "vocabularyWords/makeNextSelection" });
+            dispatch(makeNextSelection());
             return 0;
         } else {
             return exerciseState.currentVocabularyWordIndex + 1;
