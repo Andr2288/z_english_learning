@@ -10,28 +10,28 @@ const client = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-export const TEXT_TYPES = [
-    "documentary",
-    "story",
-    "news",
-    "article",
-    "blog",
-    "scientific",
-    "announcement",
-    "advertisement",
-    "instruction",
-    "review on product / video / post etc",
-    "letter",
-    "documentation",
-    "speech",
-    "comment",
-    "social media post",
-];
+// export const TEXT_TYPES = [
+//     "documentary",
+//     "story",
+//     "news",
+//     "article",
+//     "blog",
+//     "scientific",
+//     "announcement",
+//     "advertisement",
+//     "instruction",
+//     "review on product / video / post etc",
+//     "letter",
+//     "documentation",
+//     "speech",
+//     "comment",
+//     "social media post",
+// ];
 
-export const getRandomSentenceType = () => {
-    const randomIndex = Math.floor(Math.random() * TEXT_TYPES.length);
-    return TEXT_TYPES[randomIndex];
-};
+// export const getRandomSentenceType = () => {
+//     const randomIndex = Math.floor(Math.random() * TEXT_TYPES.length);
+//     return TEXT_TYPES[randomIndex];
+// };
 
 const addVocabularyWord = createAsyncThunk(
     "vocabularyWords/add",
@@ -212,7 +212,7 @@ const generateSpeech = createAsyncThunk(
 const generateSentenceCompletion = createAsyncThunk(
     "vocabularyWords/generateSentenceCompletion",
     async (vocabularyWordMainParameters) => {
-        const selectedSentenceType = getRandomSentenceType();
+        //const selectedSentenceType = getRandomSentenceType();
         const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
@@ -220,7 +220,7 @@ INPUT:
 ${vocabularyWordMainParameters.topic ? `- Topic: "${vocabularyWordMainParameters.topic}"` : ""}
 ${vocabularyWordMainParameters.relevant_translations ? `- Relevant translations: ${vocabularyWordMainParameters.relevant_translations}` : ""}
 
-IMPORTANT: Create a detailed text that sounds like it comes from a ${selectedSentenceType}.
+IMPORTANT: Create a detailed text.
 
 Return a JSON object with this exact structure:
 {
@@ -233,7 +233,6 @@ Return a JSON object with this exact structure:
 
 Requirements:
 - Create the sentence for English learners (BEGINNER Level - A1)
-- Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
 - The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
@@ -241,7 +240,7 @@ Requirements:
 - Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
 - Look at the BAD EXAMPLE - it's VERY important
 
-Example for word "clear" in "weather forecast" style:
+Example for word "clear":
 
 {
   "displaySentence": "Tomorrow the sky will be ____ throughout the day, with no clouds expected. Temperatures will rise steadily in the afternoon, bringing warm and pleasant weather.",
@@ -251,7 +250,7 @@ Example for word "clear" in "weather forecast" style:
   "hint": "Typical word in forecasts when the sky has no clouds at all."
 }
 
-Example for word "hungry" in "story" style:
+Example for word "hungry":
 
 {
   "displaySentence": "After walking all afternoon in the forest, the children were so ____ that they could hardly wait for dinner.",
@@ -272,8 +271,12 @@ Bad example:
 } Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm." So in this case you must use "correctAnswer":"lose"`;
 
         const response = await client.responses.create({
-            model: GPTModel.GPT41Mini,
-            temperature: 0.7,
+            //model: "gpt-4o-mini", // швидкий // погана граматика
+            //model: "gpt-4.1-mini", // трішки краща граматика
+            model: GPTModel.GPT5Mini,
+
+            reasoning: { effort: "low" },
+            //temperature: 0.6,
             input,
         });
 
@@ -291,7 +294,7 @@ Bad example:
 const generateListenAndFill = createAsyncThunk(
     "vocabularyWords/generateListenAndFill",
     async (vocabularyWordMainParameters) => {
-        const selectedSentenceType = getRandomSentenceType();
+        //const selectedSentenceType = getRandomSentenceType();
         const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
@@ -299,7 +302,7 @@ INPUT:
 ${vocabularyWordMainParameters.topic ? `- Topic: "${vocabularyWordMainParameters.topic}"` : ""}
 ${vocabularyWordMainParameters.relevant_translations ? `- Relevant translations: ${vocabularyWordMainParameters.relevant_translations}` : ""}
 
-IMPORTANT: Create a detailed text that sounds like it comes from a ${selectedSentenceType}.
+IMPORTANT: Create a detailed text.
 
 Return a JSON object with this exact structure:
 {
@@ -312,7 +315,6 @@ Return a JSON object with this exact structure:
 
 Requirements:
 - Create the sentence for English learners (BEGINNER Level - A1)
-- Sentence type: "${selectedSentenceType}" (the style/context of the sentence you should use)
 - The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
@@ -320,7 +322,7 @@ Requirements:
 - Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
 - Look at the BAD EXAMPLE - it's VERY important
 
-Example for word "clear" in "weather forecast" style:
+Example for word "clear":
 
 {
   "displaySentence": "Tomorrow the sky will be ____ throughout the day, with no clouds expected. Temperatures will rise steadily in the afternoon, bringing warm and pleasant weather.",
@@ -330,7 +332,7 @@ Example for word "clear" in "weather forecast" style:
   "hint": "Typical word in forecasts when the sky has no clouds at all."
 }
 
-Example for word "hungry" in "story" style:
+Example for word "hungry":
 
 {
   "displaySentence": "After walking all afternoon in the forest, the children were so ____ that they could hardly wait for dinner.",
@@ -351,8 +353,12 @@ Bad example:
 } Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm." So in this case you must use "correctAnswer":"lose"`;
 
         const response = await client.responses.create({
-            model: GPTModel.GPT41Mini,
-            temperature: 0.7,
+            //model: "gpt-4o-mini", // швидкий // погана граматика
+            //model: "gpt-4.1-mini", // трішки краща граматика
+            model: GPTModel.GPT5Mini,
+
+            reasoning: { effort: "low" },
+            //temperature: 0.6,
             input,
         });
 
