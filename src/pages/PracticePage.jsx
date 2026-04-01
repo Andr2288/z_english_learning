@@ -410,7 +410,7 @@ const PracticePage = () => {
                         isOpen={uiState.showStatsSidebar}
                         onToggle={toggleStatsSidebar}
                         data={data}
-                        exerciseType={exerciseState.exerciseType}
+                        exerciseType={"translate_sentence_exercise"}
                     />
                 </div>
             )}
